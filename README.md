@@ -34,8 +34,8 @@ This project was developed as part of the [An Introduction to Programming the In
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/JosePFs/4wd-car
-cd car_demo
+git clone https://github.com/JosePFs/4wd-car.git
+cd 4wd-car
 ```
 
 2. Create and activate a virtual environment:
