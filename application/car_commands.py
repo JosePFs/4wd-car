@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
+import logging
+from logging import Logger
 
-from .commands import CarCommand
-from .command_result import CommandResult
+from .commands import CarCommand, CommandResult
 from domain import Distance, Speed
 
 
@@ -56,11 +57,18 @@ class CarEmergencyStopCommand(CarCommand):
 class CarAvoidObstacleCommand(CarCommand):
     distance: Distance
 
+    logger: ClassVar[Logger] = logging.getLogger(__name__)
+
     def execute(self, car: 'Car') -> CommandResult:
-        if self.distance < car.critical_distance:
+        self.logger.info(
+            f"🔍 CarAvoidObstacleCommand: distance={self.distance}")
+        if self.distance.value < car.critical_distance.value:
+            self.logger.info(f"🔍 CarAvoidObstacleCommand: critical distance")
             _, events = car.emergency_stop().into_parts()
-        elif self.distance < car.safe_distance:
+        elif self.distance.value < car.safe_distance.value:
+            self.logger.info(f"🔍 CarAvoidObstacleCommand: safe distance")
             _, events = car.slow_down(Speed.from_percentage(30)).into_parts()
         else:
+            self.logger.info(f"🔍 CarAvoidObstacleCommand: no action needed")
             events = []
         return CommandResult(events=events)

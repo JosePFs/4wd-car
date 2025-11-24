@@ -18,6 +18,10 @@ class ObstaclesDetector(Entity):
 
         self._is_on = False
 
+    @property
+    def is_on(self) -> bool:
+        return self._is_on
+
     def turn_on(self) -> EntityWithEvents['ObstaclesDetector']:
         self._is_on = True
         return EntityWithEvents(self).with_event(ObstaclesDetectorTurnOnEvent())
@@ -29,9 +33,6 @@ class ObstaclesDetector(Entity):
         return EntityWithEvents(self).with_event(ObstaclesDetectorTurnOffEvent())
 
     def detect(self) -> EntityWithEvents['ObstaclesDetector']:
-        if not self._is_on:
-            return EntityWithEvents(self)
-
         distance = Distance.from_centimeters(
             self.distance_detector.get_distance())
         self.logger.info(f"🔍 Obstacles detector: {distance}")

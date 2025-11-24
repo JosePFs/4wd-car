@@ -1,16 +1,25 @@
 from typing import Generic, TypeVar
 from abc import ABC, abstractmethod
-import uuid
 
 from domain.event import Event
+from domain.exception.entity_exception import EntityIdException
+from domain.vo.id import Id
 
 
 class Entity(ABC):
-    def __init__(self, id: str = uuid.uuid4()):
+    def __init__(self, id: Id = Id.generate()):
         self._id = id
 
+    def __post_init__(self) -> None:
+        self.validate()
+
+    def validate(self) -> None:
+        if not self._id:
+            raise EntityIdException(
+                f"Entity {self.__class__.__name__} has no id")
+
     @property
-    def id(self) -> str:
+    def id(self) -> Id:
         return self._id
 
     def __eq__(self, other: object) -> bool:

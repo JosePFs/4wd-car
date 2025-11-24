@@ -8,7 +8,7 @@ from ..vo.speed import Speed
 from .car_navigation import CarNavigation
 from ..port import Leds, Buzzer, CarMotors
 from .car_navigation_modes import NormalNavigation
-from ..event import CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent, CarSlowDownEvent
+from ..event import CarTurnOnEvent, CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent, CarSlowDownEvent
 
 
 class Car(Entity):
@@ -21,6 +21,11 @@ class Car(Entity):
         self.leds: Leds = leds
         self.buzzer: Buzzer = buzzer
         self.min_distance: Distance = min_distance
+        self._is_on = False
+
+    @property
+    def is_on(self) -> bool:
+        return self._is_on
 
     @property
     def critical_distance(self) -> Distance:
@@ -29,6 +34,10 @@ class Car(Entity):
     @property
     def safe_distance(self) -> Distance:
         return Distance.from_centimeters(self.min_distance.value * 1.5)
+
+    def turn_on(self) -> EntityWithEvents['Car']:
+        self._is_on = True
+        return EntityWithEvents(self).with_event(CarTurnOnEvent())
 
     def turn_off(self) -> EntityWithEvents['Car']:
         self.navigation.stop()

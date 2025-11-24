@@ -5,6 +5,14 @@ from ..vo.speed import Speed
 
 
 @dataclass(frozen=True)
+class CarTurnOnEvent(Event[None]):
+    name: str = "car_turn_on"
+
+    def __str__(self) -> str:
+        return f"CarTurnOnEvent(name={self.name})"
+
+
+@dataclass(frozen=True)
 class CarTurnOffEvent(Event[None]):
     name: str = "car_turn_off"
 

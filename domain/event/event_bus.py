@@ -27,6 +27,10 @@ class EventBus:
     def publish(self, event: Event):
         self._queue.put(event)
 
+    def publish_all(self, events: list[Event]):
+        for event in events:
+            self.publish(event)
+
     def _process_events(self):
         while self._running:
             try:
