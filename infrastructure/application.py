@@ -4,7 +4,7 @@ from logging import Logger
 from queue import Queue
 
 from domain import Car, ObstaclesDetector, EventBus, ObstacleDetectedEvent
-from application import CarCommand, ObstaclesDetectorCommand, CarTurnOffCommand, ObstaclesDetectorTurnOffCommand
+from application import CarCommand, ObstaclesDetectorCommand, CarTurnOffCommand, ObstaclesDetectorTurnOffCommand, CarAvoidObstacleCommand
 from infrastructure import Motors, Leds, Buzzer, Ultrasonic, Servo
 
 
@@ -23,7 +23,7 @@ class Application:
         self._event_bus = EventBus()
 
         self._event_bus.subscribe(
-            ObstacleDetectedEvent, self.car.on_obstacle_detected)
+            ObstacleDetectedEvent, lambda event: self.queue_car_command(CarAvoidObstacleCommand(event.payload)))
 
     def start(self) -> None:
         self._threads = [
@@ -32,6 +32,19 @@ class Application:
         ]
         for thread in self._threads:
             thread.start()
+
+    def stop(self) -> None:
+        if self._stop_event.is_set():
+            return
+
+        self.queue_car_command(CarTurnOffCommand())
+        self.queue_obstacles_detector_command(
+            ObstaclesDetectorTurnOffCommand())
+
+        for thread in self._threads:
+            thread.join()
+
+        self._stop_event.set()
 
     def _run_car(self) -> None:
         while not self._stop_event.is_set():
@@ -75,19 +88,6 @@ class Application:
                 break
             for event in result.events:
                 self.logger.info(f"Obstacle detector event: {event}")
-
-    def stop(self) -> None:
-        if self._stop_event.is_set():
-            return
-
-        self.queue_car_command(CarTurnOffCommand())
-        self.queue_obstacles_detector_command(
-            ObstaclesDetectorTurnOffCommand())
-
-        for thread in self._threads:
-            thread.join()
-
-        self._stop_event.set()
 
     def queue_car_command(self, cmd: CarCommand) -> None:
         self.car_commands.put(cmd)

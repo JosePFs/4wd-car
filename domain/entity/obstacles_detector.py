@@ -13,8 +13,8 @@ class ObstaclesDetector(Entity):
 
     def __init__(self, distance_detector: ObstaclesDetectorDistance, servo: ObstaclesDetectorServo) -> None:
         super().__init__()
-        self.distance_detector = distance_detector
-        self.servo = servo
+        self.distance_detector: ObstaclesDetectorDistance = distance_detector
+        self.servo: ObstaclesDetectorServo = servo
 
         self._is_on = False
 

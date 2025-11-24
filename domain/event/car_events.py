@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Generic, TypeVar, Optional
+from dataclasses import dataclass
 
 from .event import Event
+from ..vo.speed import Speed
 
 
 @dataclass(frozen=True)
@@ -59,3 +58,11 @@ class CarEmergencyStopEvent(Event[None]):
 
     def __str__(self) -> str:
         return f"CarEmergencyStopEvent(name={self.name})"
+
+
+@dataclass(frozen=True)
+class CarSlowDownEvent(Event[Speed]):
+    name: str = "car_slow_down"
+
+    def __str__(self) -> str:
+        return f"CarSlowDownEvent(name={self.name})"

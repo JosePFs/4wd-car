@@ -4,10 +4,11 @@ from typing import Callable
 
 from .entity import Entity, EntityWithEvents
 from ..vo.distance import Distance
+from ..vo.speed import Speed
 from .car_navigation import CarNavigation
 from ..port import Leds, Buzzer, CarMotors
 from .car_navigation_modes import NormalNavigation
-from ..event import ObstacleDetectedEvent, CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent
+from ..event import CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent, CarSlowDownEvent
 
 
 class Car(Entity):
@@ -16,10 +17,18 @@ class Car(Entity):
     def __init__(self, motors: CarMotors, leds: Leds, buzzer: Buzzer, min_distance: Distance = Distance.from_centimeters(30)) -> None:
         super().__init__()
         self.navigation: CarNavigation = NormalNavigation(self)
-        self.motors = motors
-        self.leds = leds
-        self.buzzer = buzzer
-        self.min_distance = min_distance
+        self.motors: CarMotors = motors
+        self.leds: Leds = leds
+        self.buzzer: Buzzer = buzzer
+        self.min_distance: Distance = min_distance
+
+    @property
+    def critical_distance(self) -> Distance:
+        return Distance.from_centimeters(self.min_distance.value)
+
+    @property
+    def safe_distance(self) -> Distance:
+        return Distance.from_centimeters(self.min_distance.value * 1.5)
 
     def turn_off(self) -> EntityWithEvents['Car']:
         self.navigation.stop()
@@ -52,6 +61,10 @@ class Car(Entity):
         self.navigation.emergency_stop()
         return EntityWithEvents(self).with_event(CarEmergencyStopEvent())
 
+    def slow_down(self, speed: Speed) -> EntityWithEvents['Car']:
+        self.motors.slow_down(speed)
+        return EntityWithEvents(self).with_event(CarSlowDownEvent())
+
     def navigate(self, action: Callable[[CarMotors], None]) -> None:
         action(self.motors)
 
@@ -59,9 +72,6 @@ class Car(Entity):
         self.logger.info(
             f"\n🔄 Navigation mode transition: {self.navigation.get_type().value} -> {new_navigation_mode.get_type().value}")
         self.navigation = new_navigation_mode
-
-    def on_obstacle_detected(self, event: ObstacleDetectedEvent) -> None:
-        self.logger.info(f"🔍 Obstacle detected: {event.payload}")
 
     def __str__(self) -> str:
         return f"Car(id={self.id})"

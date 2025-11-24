@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .commands import CarCommand
 from .command_result import CommandResult
+from domain import Distance, Speed
 
 
 if TYPE_CHECKING:
@@ -47,4 +49,18 @@ class CarStopCommand(CarCommand):
 class CarEmergencyStopCommand(CarCommand):
     def execute(self, car: 'Car') -> CommandResult:
         _, events = car.emergency_stop().into_parts()
+        return CommandResult(events=events)
+
+
+@dataclass(frozen=True)
+class CarAvoidObstacleCommand(CarCommand):
+    distance: Distance
+
+    def execute(self, car: 'Car') -> CommandResult:
+        if self.distance < car.critical_distance:
+            _, events = car.emergency_stop().into_parts()
+        elif self.distance < car.safe_distance:
+            _, events = car.slow_down(Speed.from_percentage(30)).into_parts()
+        else:
+            events = []
         return CommandResult(events=events)
