@@ -1,0 +1,17 @@
+{
+  "include": ["client", "device", "server", "config_common"],
+  "extraPaths": ["."],
+  "reportMissingModuleSource": false,
+  "executionEnvironments": [
+    {
+      "root": "client",
+    },
+    {
+      "root": "device"
+    },
+    {
+      "root": "server"
+    }
+  ]
+}
+

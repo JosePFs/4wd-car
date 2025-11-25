@@ -1,86 +1,213 @@
-# Raspberry Pi Smart Car - DDD Architecture Demo
+# 4WD Smart Car - IoT Control System
 
-A demonstration project implementing Domain-Driven Design (DDD) with Hexagonal Architecture for the [Freenove 4WD Smart Car Kit for Raspberry Pi](https://github.com/Freenove/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi).
+A distributed IoT system for controlling the [Freenove 4WD Smart Car Kit for Raspberry Pi](https://github.com/Freenove/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi) using Domain-Driven Design principles.
 
-## Project Overview
+## Project Structure
 
-This project showcases an approach to IoT device programming by applying software architecture patterns typically used in enterprise applications. While the hardware is relatively simple, the codebase demonstrates how clean architecture principles can be applied to embedded systems and IoT development.
+This project is organized into four independent modules:
 
-The implementation separates business logic from infrastructure concerns, making the code testable, maintainable, and extensible - key considerations for any IoT project.
+```
+4wd-car/
+├── config_common/     # Shared configuration and constants
+├── client/            # Keyboard controller
+├── server/            # UDP server relay
+└── device/            # Raspberry Pi car control logic
+```
 
-## Architecture
+### Modules
 
-The project follows **Domain-Driven Design (DDD)** principles with **Hexagonal Architecture** (Ports and Adapters pattern):
+#### 1. `config_common/`
 
-- **Domain Layer**: Core business entities (Car, ObstacleDetector), value objects (Distance, Speed), and domain events
-- **Application Layer**: Use cases and command handlers that orchestrate domain logic
-- **Infrastructure Layer**: Hardware adapters for GPIO, motors, sensors, and LEDs
+Shared configuration package used by `client` and `server`.
 
-**Note**: As this is a small-scale demonstration, some architectural components have been simplified or omitted. A production IoT system would include additional patterns such as repositories, aggregates, and more sophisticated event handling mechanisms.
+**Purpose:**
 
-## Educational Context
+- Define common commands (FORWARD, BACKWARD, LEFT, RIGHT, etc.)
+- Share environment variables (UDP host, port, etc.)
+- Maintain consistent protocol across modules
 
-This project was developed as part of the [An Introduction to Programming the Internet of Things (IoT)](https://www.coursera.org/learn/iot-devices-il) specialization on Coursera, demonstrating the application of software engineering best practices to IoT device programming.
+**Installation:**
+Each module includes this as a local dependency via `requirements.txt`:
+
+```txt
+-e ../config_common
+```
+
+#### 2. `client/`
+
+Keyboard controller application that runs on your laptop or desktop.
+
+**Features:**
+
+- Captures keyboard input (arrow keys, WASD, Space, Shift)
+- Sends UDP commands to the server or directly to the device
+- Clean terminal handling with proper restoration on exit
+
+**Usage:**
+
+```bash
+cd client
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+**Controls:**
+
+- Arrow Keys / WASD: Movement (Forward/Backward/Left/Right)
+- Space: Toggle car ON/OFF
+- Shift: Toggle obstacle detection ON/OFF
+- ESC: Exit application
+
+#### 3. `server/`
+
+UDP server relay (middleware component).
+
+**Purpose:**
+
+- Receives UDP commands from client
+- Relays commands to the Raspberry Pi device
+- Can add logging, filtering, or additional processing
+
+#### 4. `device/`
+
+Raspberry Pi application that controls the physical 4WD car.
+
+**Features:**
+
+- Receives UDP commands over the network
+- Controls motors, LEDs, buzzer via GPIO
+- Obstacle detection with ultrasonic sensor
+- Implements Domain-Driven Design with Hexagonal Architecture
+
+**Architecture:**
+
+- **Domain Layer:** Entities (Car, ObstacleDetector), Value Objects (Speed, Distance), Events
+- **Application Layer:** Command handlers, use cases
+- **Infrastructure Layer:** GPIO adapters, UDP server, event bus
+
+**Usage:**
+
+```bash
+cd device
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
 
 ## Setup
 
 ### Prerequisites
 
-- Raspberry Pi with Freenove 4WD Smart Car Kit assembled
 - Python 3.11+
-- Virtual environment (recommended)
+- Raspberry Pi with Freenove 4WD Smart Car Kit (for device module)
+- Network connectivity between client and device
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
+
 ```bash
 git clone https://github.com/JosePFs/4wd-car.git
 cd 4wd-car
 ```
 
-2. Create and activate a virtual environment:
+2. **Setup config_common:**
+
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+cd config_common
+# Edit .env or environment variables as needed
 ```
 
-3. Install dependencies:
+3. **Setup client:**
+
 ```bash
+cd client
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Key Features
+4. **Setup device (on Raspberry Pi):**
 
-- **Clean Architecture**: Clear separation between domain logic and hardware implementation
-- **Event-Driven Design**: Domain events for state changes and inter-component communication
-- **Thread-Safe Operations**: Concurrent handling of car control and obstacle detection
-- **Type Safety**: Full type hints for better IDE support and code reliability
-- **Testability**: Domain logic isolated from hardware dependencies
-
-## Technology Stack
-
-- Python 3.11+
-- RPi.GPIO for Raspberry Pi hardware control
-- Threading for concurrent operations
-- Dataclasses for immutable value objects
-
-## Project Structure
-```
-car_demo/
-├── domain/          # Business logic and domain models
-├── application/     # Use cases and command handlers
-└── infrastructure/  # Hardware adapters and external interfaces
+```bash
+cd device
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## Purpose
+5. **Configure environment:**
+   Create a `.env` file or export environment variables:
 
-- Software architecture in IoT contexts
-- Clean code principles applied to embedded systems
-- DDD and Hexagonal Architecture
-- Raspberry Pi and hardware integration
+```bash
+export UDP_HOST="192.168.1.100"  # Raspberry Pi IP
+export UDP_PORT="5000"
+```
 
----
+### Running the System
 
-**Hardware Reference**: [Freenove 4WD Smart Car Kit](https://github.com/Freenove/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi)
+1. **Start the device (Raspberry Pi):**
 
-**Course**: [IoT Devices Specialization - Coursera](https://www.coursera.org/learn/iot-devices-il)
+```bash
+cd device
+python main.py
+```
+
+2. **Start the client (laptop/desktop):**
+
+```bash
+cd client
+python main.py
+```
+
+3. **Control the car using keyboard!**
+
+## Configuration
+
+### Shared Configuration (`config_common/`)
+
+The `config_common` module provides:
+
+**Commands:**
+
+```python
+class Command(Enum):
+    FORWARD = "car_forward"
+    BACKWARD = "car_backward"
+    LEFT = "car_left"
+    RIGHT = "car_right"
+    STOP = "car_stop"
+    TOGGLE_CAR_ON_OFF = "car_toggle_on_off"
+    TOGGLE_OBSTACLE_DETECTION_ON_OFF = "obstacles_detector_toggle_on_off"
+```
+
+**Environment Variables:**
+
+- `UDP_HOST`: Target device IP address
+- `UDP_PORT`: UDP port for communication (default: 5000)
+
+## Architecture Highlights
+
+The `device` software implements professional software architecture patterns:
+
+- **Domain-Driven Design:** Clear separation between business logic and infrastructure
+- **Hexagonal Architecture:** Domain independent of delivery mechanisms (UDP, GPIO, etc.)
+- **Event-Driven Design:** Components communicate via domain events
+- **Clean Code:** Type hints, proper abstractions, single responsibility principle
+
+For detailed implementation, see the [device software](./device/).
+
+The `client` and `server` modules are simpler applications designed to interact with the device.
+
+## Educational Context
+
+This project was developed as part of the [Hands-on Internet of Things Specialization](https://www.coursera.org/learn/iot-devices-il) specialization on Coursera.
+
+## Hardware Reference
+
+[Freenove 4WD Smart Car Kit for Raspberry Pi](https://github.com/Freenove/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi)
+
+## License
+
+MIT
