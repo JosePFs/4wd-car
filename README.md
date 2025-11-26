@@ -189,14 +189,14 @@ class Command(Enum):
 
 ## Architecture Highlights
 
-The `device` software implements professional software architecture patterns:
+The `device` module implements clean software architecture patterns:
 
 - **Domain-Driven Design:** Clear separation between business logic and infrastructure
 - **Hexagonal Architecture:** Domain independent of delivery mechanisms (UDP, GPIO, etc.)
 - **Event-Driven Design:** Components communicate via domain events
 - **Clean Code:** Type hints, proper abstractions, single responsibility principle
 
-For detailed implementation, see the [device software](./device/).
+For detailed implementation, see the [device module](./device/).
 
 The `client` and `server` modules are simpler applications designed to interact with the device.
 

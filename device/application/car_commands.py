@@ -11,9 +11,12 @@ if TYPE_CHECKING:
     from domain import Car
 
 
-class CarTurnOffCommand(CarCommand):
+class CarToggleOnOffCommand(CarCommand):
     def execute(self, car: 'Car') -> CommandResult:
-        _, events = car.turn_off().into_parts()
+        if car.is_on:
+            _, events = car.turn_off().into_parts()
+        else:
+            _, events = car.turn_on().into_parts()
         return CommandResult(events=events)
 
 
