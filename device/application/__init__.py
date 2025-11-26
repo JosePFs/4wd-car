@@ -1,3 +1,4 @@
+from .application import Application
 from .commands import CarCommand, ObstaclesDetectorCommand, CommandResult
 from .car_commands import CarToggleOnOffCommand, CarMoveForwardCommand, CarMoveBackwardCommand, CarTurnLeftCommand, CarTurnRightCommand, CarStopCommand, CarEmergencyStopCommand, CarAvoidObstacleCommand
 from .obstacles_detector_commands import ObstaclesDetectorToggleOnOffCommand, ObstaclesDetectorDetectCommand
@@ -6,6 +7,7 @@ from .obstacle_detector_commands_handler import ObstaclesDetectorCommandsHandler
 
 
 __all__ = [
+    "Application",
     "CommandResult",
     "CarCommand",
     "CarToggleOnOffCommand",

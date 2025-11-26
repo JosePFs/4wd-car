@@ -14,9 +14,12 @@ downloads/
 eggs/
 .eggs/
 lib/
-# Ignore lib directory but not its contents
+# Ignore lib directory but not its contents but only the __pycache__ directory and the .pyc and .pyo files
 !device/infrastructure/lib/
 !device/infrastructure/lib/**
+device/infrastructure/lib/**/__pycache__/
+device/infrastructure/lib/**/*.pyc
+device/infrastructure/lib/**/*.pyo
 lib64/
 parts/
 sdist/

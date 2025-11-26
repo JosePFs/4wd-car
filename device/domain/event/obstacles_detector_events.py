@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from .event import Event
 from ..vo.distance import Distance
@@ -21,7 +22,7 @@ class ObstaclesDetectorTurnOffEvent(Event[None]):
 
 
 @dataclass(frozen=True)
-class ObstacleDetectedEvent(Event[Distance]):
+class ObstacleDetectedEvent(Event[Optional[Distance]]):
     name: str = "obstacle_detected"
 
     def __str__(self) -> str:

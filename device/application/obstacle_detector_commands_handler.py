@@ -1,5 +1,5 @@
 from queue import Queue, Empty
-from threading import Thread
+from threading import Thread, Event
 import logging
 from logging import Logger
 
@@ -21,29 +21,35 @@ class ObstaclesDetectorCommandsHandler(Thread):
         self._command_queue = command_queue
         self._event_bus = event_bus
 
-    def run(self):
-        self._obstacles_detector.turn_on()
+        self._stop_event = Event()
 
-        while self._obstacles_detector.is_on:
+    def run(self) -> None:
+        while not self._stop_event.is_set():
             try:
                 command = self._command_queue.get(timeout=0.1)
-
                 result = command.execute(self._obstacles_detector)
-
                 self._event_bus.publish_all(result.events)
-
                 self._command_queue.task_done()
 
             except Empty:
                 continue
             except ObstaclesDetectorException as e:
                 self._logger.error(f"Obstacles detector exception: {e}")
+                self._stop_obstacles_detector()
                 raise e
             except Exception as e:
                 self._logger.error(
                     f"Error executing obstacles detector command: {e}")
+                self._stop_obstacles_detector()
                 raise e
 
-    def stop(self):
-        self._obstacles_detector.turn_off()
+        if self._obstacles_detector.is_on:
+            self._obstacles_detector.turn_off()
+
+    def _stop_obstacles_detector(self) -> None:
+        if self._obstacles_detector.is_on:
+            self._obstacles_detector.turn_off()
+
+    def stop(self) -> None:
+        self._stop_event.set()
         self.join()

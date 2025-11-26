@@ -24,19 +24,19 @@ class ObstaclesDetector(Entity):
 
     def turn_on(self) -> EntityWithEvents['ObstaclesDetector']:
         self._is_on = True
-        return EntityWithEvents(self).with_event(ObstaclesDetectorTurnOnEvent())
+        return EntityWithEvents['ObstaclesDetector'](self).with_event(ObstaclesDetectorTurnOnEvent())
 
     def turn_off(self) -> EntityWithEvents['ObstaclesDetector']:
         self._is_on = False
         self.servo.turn_off()
         self.distance_detector.turn_off()
-        return EntityWithEvents(self).with_event(ObstaclesDetectorTurnOffEvent())
+        return EntityWithEvents['ObstaclesDetector'](self).with_event(ObstaclesDetectorTurnOffEvent())
 
     def detect(self) -> EntityWithEvents['ObstaclesDetector']:
         distance = Distance.from_centimeters(
             self.distance_detector.get_distance())
         self.logger.info(f"🔍 Obstacles detector: {distance}")
-        return EntityWithEvents(self).with_event(ObstacleDetectedEvent(payload=distance))
+        return EntityWithEvents['ObstaclesDetector'](self).with_event(ObstacleDetectedEvent(payload=distance))
 
     def __str__(self) -> str:
         return f"ObstaclesDetector(id={self.id})"

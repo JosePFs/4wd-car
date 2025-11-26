@@ -37,42 +37,42 @@ class Car(Entity):
 
     def turn_on(self) -> EntityWithEvents['Car']:
         self._is_on = True
-        return EntityWithEvents(self).with_event(CarTurnOnEvent())
+        return EntityWithEvents['Car'](self).with_event(CarTurnOnEvent())
 
     def turn_off(self) -> EntityWithEvents['Car']:
         self.navigation.stop()
         self.motors.turn_off()
         self.leds.turn_off()
         self.buzzer.turn_off()
-        return EntityWithEvents(self).with_event(CarTurnOffEvent())
+        return EntityWithEvents['Car'](self).with_event(CarTurnOffEvent())
 
     def forward(self) -> EntityWithEvents['Car']:
         self.navigation.forward()
-        return EntityWithEvents(self).with_event(CarForwardEvent())
+        return EntityWithEvents['Car'](self).with_event(CarForwardEvent())
 
     def backward(self) -> EntityWithEvents['Car']:
         self.navigation.backward()
-        return EntityWithEvents(self).with_event(CarBackwardEvent())
+        return EntityWithEvents['Car'](self).with_event(CarBackwardEvent())
 
     def turn_left(self) -> EntityWithEvents['Car']:
         self.navigation.turn_left()
-        return EntityWithEvents(self).with_event(CarTurnLeftEvent())
+        return EntityWithEvents['Car'](self).with_event(CarTurnLeftEvent())
 
     def turn_right(self) -> EntityWithEvents['Car']:
         self.navigation.turn_right()
-        return EntityWithEvents(self).with_event(CarTurnRightEvent())
+        return EntityWithEvents['Car'](self).with_event(CarTurnRightEvent())
 
     def stop(self) -> EntityWithEvents['Car']:
         self.navigation.stop()
-        return EntityWithEvents(self).with_event(CarStopEvent())
+        return EntityWithEvents['Car'](self).with_event(CarStopEvent())
 
     def emergency_stop(self) -> EntityWithEvents['Car']:
         self.navigation.emergency_stop()
-        return EntityWithEvents(self).with_event(CarEmergencyStopEvent())
+        return EntityWithEvents['Car'](self).with_event(CarEmergencyStopEvent())
 
     def slow_down(self, speed: Speed) -> EntityWithEvents['Car']:
         self.motors.slow_down(speed)
-        return EntityWithEvents(self).with_event(CarSlowDownEvent())
+        return EntityWithEvents['Car'](self).with_event(CarSlowDownEvent())
 
     def navigate(self, action: Callable[[CarMotors], None]) -> None:
         action(self.motors)

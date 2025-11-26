@@ -2,15 +2,13 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Generic, TypeVar, Optional
 
-from ..vo.value_object import ValueObject
-
 T = TypeVar("T")
 
 
 @dataclass(frozen=True)
 class Event(ABC, Generic[T]):
     name: str = ""
-    payload: Optional[ValueObject[T]] = field(default=None)
+    payload: Optional[T] = field(default=None)
 
     def __post_init__(self) -> None:
         if not self.name:
