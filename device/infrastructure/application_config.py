@@ -25,3 +25,6 @@ class ApplicationConfig:
     @classmethod
     def test(cls) -> 'ApplicationConfig':
         return cls(mode=Mode.TEST, log_level=logging.DEBUG)
+
+    def __str__(self):
+        return f"ApplicationConfig(mode={self.mode}, log_level={self.log_level})"

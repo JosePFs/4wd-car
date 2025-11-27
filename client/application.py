@@ -1,6 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional
+from functools import partial
 import logging
 from logging import Logger
 
@@ -33,6 +34,9 @@ class ApplicationConfig:
     @classmethod
     def test(cls) -> 'ApplicationConfig':
         return cls(mode=Mode.TEST, log_level=logging.DEBUG)
+
+    def __str__(self):
+        return f"ApplicationConfig(mode={self.mode}, log_level={self.log_level})"
 
 
 class Application:
@@ -68,7 +72,7 @@ class ApplicationBuilder:
         event_handler = EventHandler()
         for event_type, command in self._callbacks:
             event_handler.add_callback(
-                event_type, lambda event: udp_client.send(command))
+                event_type, partial(lambda event, cmd: udp_client.send(cmd), cmd=command))
         keyboard_controller = KeyboardController(event_handler)
         return Application(keyboard_controller, udp_client)
 
