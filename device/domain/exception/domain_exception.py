@@ -5,3 +5,8 @@ class DomainException(Exception):
 
     def __str__(self) -> str:
         return self.message
+
+
+class UnhandledException(DomainException):
+    def __init__(self, message: str = "Unhandled exception"):
+        super().__init__(message)

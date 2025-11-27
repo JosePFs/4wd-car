@@ -3,7 +3,7 @@ from threading import Thread, Event
 import logging
 from logging import Logger
 
-from domain import ObstaclesDetector, EventBus, ObstaclesDetectorException
+from domain import ObstaclesDetector, EventBus, ObstaclesDetectorException, UnhandledException
 from .commands import ObstaclesDetectorCommand
 
 
@@ -41,7 +41,7 @@ class ObstaclesDetectorCommandsHandler(Thread):
                 self._logger.error(
                     f"Error executing obstacles detector command: {e}")
                 self._stop_obstacles_detector()
-                raise e
+                raise UnhandledException() from e
 
         if self._obstacles_detector.is_on:
             self._obstacles_detector.turn_off()

@@ -1,4 +1,4 @@
-from .domain_exception import DomainException
+from .domain_exception import DomainException, UnhandledException
 from .entity_exception import EntityIdException
 from .command_exception import InvalidCommandException
 from .value_object_exception import InvalidValueException
@@ -7,6 +7,7 @@ from .obstacles_exception import ObstaclesDetectorException
 
 __all__ = [
     "DomainException",
+    "UnhandledException",
     "EntityIdException",
     "InvalidCommandException",
     "InvalidValueException",

@@ -3,7 +3,7 @@ from .vo import Distance, Speed, ValueObject
 from .event import Event, EventBus, ObstacleDetectedEvent, CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent, ObstaclesDetectorTurnOnEvent, ObstaclesDetectorTurnOffEvent, ObstacleDetectedEvent
 from .port import Buzzer, CarMotors, Leds, ObstaclesDetectorDistance, ObstaclesDetectorServo
 from .entity import Car, ObstaclesDetector, CarNavigation, CarNavigationType, NormalNavigation, ObstacleDetectedNavigation, EmergencyStopNavigation
-from .exception import DomainException, EntityIdException, InvalidCommandException, InvalidValueException, CarException, ObstaclesDetectorException
+from .exception import DomainException, UnhandledException, EntityIdException, InvalidCommandException, InvalidValueException, CarException, ObstaclesDetectorException
 
 __all__ = [
     "Entity",
@@ -36,6 +36,7 @@ __all__ = [
     "ObstaclesDetectorDistance",
     "ObstaclesDetectorServo",
     "DomainException",
+    "UnhandledException",
     "EntityIdException",
     "InvalidCommandException",
     "InvalidValueException",

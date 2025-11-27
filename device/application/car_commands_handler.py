@@ -3,7 +3,7 @@ from threading import Thread, Event
 import logging
 from logging import Logger
 
-from domain import Car, EventBus, CarException
+from domain import Car, EventBus, CarException, UnhandledException
 from .commands import CarCommand
 
 
@@ -35,7 +35,7 @@ class CarCommandsHandler(Thread):
             except Exception as e:
                 self._logger.error(f"Error executing car command: {e}")
                 self._stop_car()
-                raise e
+                raise UnhandledException() from e
 
         self._stop_car()
 
