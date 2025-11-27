@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "device"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "rpi_ws281x",
+    "spidev",
+    "smbus2",
+    "numpy",
+    "gpiozero",
+    "picamera2",
+]
+
+[tool.setuptools]
+packages = ["device"]
+package-dir = { "device" = "." }
+

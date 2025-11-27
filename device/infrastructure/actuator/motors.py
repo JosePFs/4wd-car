@@ -1,5 +1,5 @@
-from domain import CarMotors, Speed
-from infrastructure.lib.motor import Ordinary_Car as LibMotor
+from ...domain import CarMotors, Speed
+from ..lib.motor import Ordinary_Car as LibMotor
 
 
 class Motors(CarMotors):

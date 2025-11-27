@@ -3,7 +3,7 @@ from threading import Thread, Event
 import logging
 from logging import Logger
 
-from domain import ObstaclesDetector, EventBus, ObstaclesDetectorException, UnhandledException
+from ..domain import ObstaclesDetector, EventBus, ObstaclesDetectorException, UnhandledException
 from .commands import ObstaclesDetectorCommand
 
 

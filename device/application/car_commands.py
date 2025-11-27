@@ -4,7 +4,7 @@ import logging
 from logging import Logger
 
 from .commands import CarCommand, CommandResult
-from domain import Distance, Speed
+from ..domain import Distance, Speed
 
 
 if TYPE_CHECKING:

@@ -3,10 +3,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from domain import Car
-    from domain import ObstaclesDetector
+    from ..domain import Car
+    from ..domain import ObstaclesDetector
 
-from domain import Event
+from ..domain import Event
 
 
 @dataclass(frozen=True)

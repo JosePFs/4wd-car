@@ -1,7 +1,7 @@
 import time
 
-from domain import Buzzer as DomainBuzzer, CarNavigationType
-from infrastructure.lib.buzzer import Buzzer as LibBuzzer
+from ...domain import Buzzer as DomainBuzzer, CarNavigationType
+from ..lib.buzzer import Buzzer as LibBuzzer
 
 
 class Buzzer(DomainBuzzer):

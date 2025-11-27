@@ -3,7 +3,7 @@ from threading import Thread, Event
 import logging
 from logging import Logger
 
-from domain import Car, EventBus, CarException, UnhandledException
+from ..domain import Car, EventBus, CarException, UnhandledException
 from .commands import CarCommand
 
 

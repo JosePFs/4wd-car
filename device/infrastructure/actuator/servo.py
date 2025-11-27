@@ -1,5 +1,5 @@
-from domain import ObstaclesDetectorServo
-from infrastructure.lib.servo import Servo as LibServo
+from ...domain import ObstaclesDetectorServo
+from ..lib.servo import Servo as LibServo
 
 
 class Servo(ObstaclesDetectorServo):

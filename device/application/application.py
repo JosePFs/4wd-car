@@ -2,7 +2,7 @@ import logging
 from logging import Logger
 from queue import Queue
 
-from domain import Car, ObstaclesDetector, EventBus, ObstacleDetectedEvent, DomainException
+from ..domain import Car, ObstaclesDetector, EventBus, ObstacleDetectedEvent, DomainException
 from .commands import CarCommand, ObstaclesDetectorCommand
 from .car_commands_handler import CarCommandsHandler
 from .obstacle_detector_commands_handler import ObstaclesDetectorCommandsHandler

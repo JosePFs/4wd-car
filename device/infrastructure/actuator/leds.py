@@ -1,6 +1,6 @@
-from infrastructure.lib.led import Led as LibLed
+from ..lib.led import Led as LibLed
 
-from domain import Leds as DomainLeds, CarNavigationType
+from ...domain import Leds as DomainLeds, CarNavigationType
 
 
 class Leds(DomainLeds):

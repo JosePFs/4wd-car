@@ -1,5 +1,5 @@
-from domain import ObstaclesDetectorDistance
-from infrastructure.lib.ultrasonic import Ultrasonic as LibUltrasonic
+from ...domain import ObstaclesDetectorDistance
+from ..lib.ultrasonic import Ultrasonic as LibUltrasonic
 
 
 class Ultrasonic(ObstaclesDetectorDistance):

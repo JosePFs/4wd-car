@@ -2,9 +2,9 @@ import logging
 from logging import Logger
 from typing import Optional
 
-from domain import Car, ObstaclesDetector
-from application import Application
-from infrastructure import Motors, Leds, Buzzer, Ultrasonic, Servo
+from ..domain import Car, ObstaclesDetector
+from ..application import Application
+from . import Motors, Leds, Buzzer, Ultrasonic, Servo
 from .application_config import ApplicationConfig
 
 

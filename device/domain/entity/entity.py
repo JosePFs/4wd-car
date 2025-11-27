@@ -1,9 +1,9 @@
 from typing import Generic, TypeVar
 from abc import ABC, abstractmethod
 
-from domain.event import Event
-from domain.exception.entity_exception import EntityIdException
-from domain.vo.id import Id
+from ..event import Event
+from ..exception.entity_exception import EntityIdException
+from ..vo.id import Id
 
 
 class Entity(ABC):
