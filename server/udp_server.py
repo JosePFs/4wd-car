@@ -6,6 +6,7 @@ from logging import Logger
 
 from config_common import Command
 
+
 @dataclass(frozen=True)
 class UDPPort:
     _port: int
@@ -13,6 +14,7 @@ class UDPPort:
     @property
     def port(self) -> int:
         return self._port
+
 
 class UDPServer:
     _logger: Logger = logging.getLogger(__name__)
@@ -35,5 +37,11 @@ class UDPServer:
             return None
         return command
 
-    def close(self):
+    def __enter__(self):
+        self._logger.info("Starting UDP server...")
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.sock.close()
+        return False

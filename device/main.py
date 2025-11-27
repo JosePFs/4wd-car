@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def signal_handler(stop_event: threading.Event) -> Callable[[int, FrameType | None], None]:
-    def handler(sig: int, frame: FrameType | None) -> None:
+    def handler(_sig: int, _frame: FrameType | None) -> None:
         logger.info("Signal received, stopping...")
         stop_event.set()
     return handler
@@ -37,7 +37,7 @@ def main() -> int:
             stop_event.wait()
 
     except KeyboardInterrupt:
-        logger.info("Closing...")
+        logger.info("Device stopped")
         return 0
     except Exception as e:
         logger.error(f"Error: {e}", exc_info=True)

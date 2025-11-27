@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
 dataclass(frozen=True)
+
+
 class Event(ABC):
     name: str
 
@@ -17,12 +19,14 @@ class Event(ABC):
     def __hash__(self) -> int:
         return hash(self.name)
 
+
 @dataclass(frozen=True)
 class UpPressedEvent(Event):
     name: str = "up"
 
     def __str__(self) -> str:
         return f"UpPressedEvent(name={self.name})"
+
 
 @dataclass(frozen=True)
 class DownPressedEvent(Event):
@@ -31,12 +35,14 @@ class DownPressedEvent(Event):
     def __str__(self) -> str:
         return f"DownPressedEvent(name={self.name})"
 
+
 @dataclass(frozen=True)
 class LeftPressedEvent(Event):
     name: str = "left"
 
-    def __str__(self) -> str:   
+    def __str__(self) -> str:
         return f"LeftPressedEvent(name={self.name})"
+
 
 @dataclass(frozen=True)
 class RightPressedEvent(Event):
@@ -45,6 +51,7 @@ class RightPressedEvent(Event):
     def __str__(self) -> str:
         return f"RightPressedEvent(name={self.name})"
 
+
 @dataclass(frozen=True)
 class SpacePressedEvent(Event):
     name: str = "space"
@@ -52,16 +59,10 @@ class SpacePressedEvent(Event):
     def __str__(self) -> str:
         return f"SpacePressedEvent(name={self.name})"
 
+
 @dataclass(frozen=True)
 class ShiftPressedEvent(Event):
     name: str = "ctrl"
 
     def __str__(self) -> str:
         return f"CtrlPressedEvent(name={self.name})"
-
-@dataclass(frozen=True)
-class EscapePressedEvent(Event):
-    name: str = "escape"
-
-    def __str__(self) -> str:
-        return f"EscapePressedEvent(name={self.name})"

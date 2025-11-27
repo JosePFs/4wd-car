@@ -1,20 +1,33 @@
+import sys
+import threading
+import signal
+from typing import Callable
+from types import FrameType
 import logging
 
 from config_common import Command, Env
 from udp_server import UDPServer, UDPPort
-from device import build_application
+from device import ApplicationBuilder
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-if __name__ == "__main__":
-    logger = logging.getLogger(__name__)
+
+def signal_handler(stop_event: threading.Event) -> Callable[[int, FrameType | None], None]:
+    def handler(_sig: int, _frame: FrameType | None) -> None:
+        logger.info("Signal received, stopping...")
+        stop_event.set()
+    return handler
+
+
+def main() -> int:
+    stop_event = threading.Event()
+    signal.signal(signal.SIGINT, signal_handler(stop_event))
+    signal.signal(signal.SIGTERM, signal_handler(stop_event))
 
     try:
         env = Env().load()
-        udp_server = UDPServer(UDPPort(env.udp_port))
-        udp_server.start()
-        app = build_application()
-        while True:
+        with (UDPServer(UDPPort(env.udp_port)) as udp_server, ApplicationBuilder() as app):
             command = udp_server.receive()
             match command:
                 case Command.FORWARD:
@@ -39,10 +52,19 @@ if __name__ == "__main__":
                     logger.info("Toggle obstacle detection on off")
                     app.obstacles_detector_toggle_on_off()
                 case _:
-                    continue
+                    logger.error(f"Unknown command: {command}")
+
+            stop_event.wait()
+
     except KeyboardInterrupt:
-        logger.info("Closing...")
+        logger.info("Server stopped")
+        return 0
     except Exception as e:
-        logger.error(f"Error: {e}")
-    finally:
-        logger.info("Exiting...")
+        logger.error(f"Error: {e}", exc_info=True)
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
