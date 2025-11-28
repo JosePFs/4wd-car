@@ -106,7 +106,7 @@ cd 4wd-car
 
 # On Raspberry Pi OS
 sudo apt-get update
-sudo apt-get install -y python3-libcamera python3-smbus libcap-dev
+sudo apt-get install -y i2c-tools python3-libcamera python3-smbus libcap-dev
 ```
 
 2. **Setup config_common:**
