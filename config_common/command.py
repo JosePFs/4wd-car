@@ -1,20 +1,21 @@
 from enum import Enum
-from typing import Optional
-from dataclasses import dataclass
+
+class CommandType(Enum):
+    CONTINOUS = "continous"
+    DISCRETE = "discrete"
 
 class Command(Enum):
-    FORWARD = ("car_forward", None)
-    BACKWARD = ("car_backward", None)
-    LEFT = ("car_left", None)
-    RIGHT = ("car_right", None)
-    STOP = ("car_stop", str)
-    TOGGLE_CAR_ON_OFF = ("car_toggle_on_off", None)
-    TOGGLE_OBSTACLE_DETECTION_ON_OFF = ("obstacles_detector_toggle_on_off", None)
+    FORWARD = ("car_forward", CommandType.CONTINOUS)
+    BACKWARD = ("car_backward", CommandType.CONTINOUS)
+    LEFT = ("car_left", CommandType.CONTINOUS)
+    RIGHT = ("car_right", CommandType.CONTINOUS)
+    STOP = ("car_stop", CommandType.DISCRETE)
+    TOGGLE_CAR_ON_OFF = ("car_toggle_on_off", CommandType.DISCRETE)
+    TOGGLE_OBSTACLE_DETECTION_ON_OFF = ("obstacles_detector_toggle_on_off", CommandType.DISCRETE)
 
-    def with_key(self, key: str) -> "CommandWithKey":
-        if self.value[1] is not None:
-            return CommandWithKey(self, key)
-        return CommandWithKey(self, None)
+    @property
+    def continous(self) -> bool:
+        return self.value[1] == CommandType.CONTINOUS
 
     @classmethod
     def from_string(cls, string: str) -> "Command":
@@ -30,10 +31,5 @@ class Command(Enum):
         except ValueError:
             raise ValueError(f"'{string}' is not a valid Command")
 
-@dataclass(frozen=True)
-class CommandWithKey:
-    command: Command
-    key: Optional[str]
-
     def __str__(self) -> str:
-        return f"{self.command.name} {self.key}"
+        return self.name

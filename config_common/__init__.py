@@ -1,5 +1,5 @@
-from .command import Command, CommandWithKey
+from .command import Command
 from .env import Env
 
 
-__all__ = ["Command", "CommandWithKey", "Env"]
+__all__ = ["Command", "Env"]

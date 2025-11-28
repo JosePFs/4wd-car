@@ -1,5 +1,6 @@
 from pynput import keyboard
-from typing import Union, Any
+from enum import Enum
+from typing import Union, Any, Optional
 import termios
 import sys
 import tty
@@ -22,20 +23,30 @@ S_KEY = keyboard.KeyCode.from_char("s")
 A_KEY = keyboard.KeyCode.from_char("a")
 D_KEY = keyboard.KeyCode.from_char("d")
 
+IS_RELEASE_KEY = True
+
+class KeyEventMap(Enum):
+    UP = (keyboard.Key.up, IS_RELEASE_KEY, UpPressedEvent)
+    W = (W_KEY, IS_RELEASE_KEY, UpPressedEvent)
+    DOWN = (keyboard.Key.down, IS_RELEASE_KEY, DownPressedEvent)
+    S = (S_KEY, IS_RELEASE_KEY, DownPressedEvent)
+    LEFT = (keyboard.Key.left, IS_RELEASE_KEY, LeftPressedEvent)
+    A = (A_KEY, IS_RELEASE_KEY, LeftPressedEvent)
+    RIGHT = (keyboard.Key.right, IS_RELEASE_KEY, RightPressedEvent)
+    D = (D_KEY, IS_RELEASE_KEY, RightPressedEvent)
+    SHIFT_LEFT = (keyboard.Key.shift_l, not IS_RELEASE_KEY, ShiftLeftPressedEvent)
+    SHIFT_RIGHT = (keyboard.Key.shift_r, not IS_RELEASE_KEY, ShiftRightPressedEvent)
+
+    @classmethod
+    def has_on_release(cls, key: keyboard.Key | keyboard.KeyCode) -> bool:
+        return any(candidate for candidate in cls.__iter__() if key == candidate.value[0] and candidate.value[1] == True)
+    
+    @classmethod
+    def get_on_press(cls, key: keyboard.Key | keyboard.KeyCode) -> Optional['KeyEventMap']:
+        return next((candidate for candidate in cls.__iter__() if key == candidate.value[0]), None)
+
 class KeyboardController:
     _logger: Logger = logging.getLogger(__name__)
-    _key_event_map = {
-        keyboard.Key.up: UpPressedEvent,
-        W_KEY: UpPressedEvent,
-        keyboard.Key.down: DownPressedEvent,
-        S_KEY: DownPressedEvent,
-        keyboard.Key.left: LeftPressedEvent,
-        A_KEY: LeftPressedEvent,
-        keyboard.Key.right: RightPressedEvent,
-        D_KEY: RightPressedEvent,
-        keyboard.Key.shift_l: ShiftLeftPressedEvent,
-        keyboard.Key.shift_r: ShiftRightPressedEvent,
-    }
 
     def __init__(self, event_handler: EventHandler):
         self._event_handler = event_handler
@@ -44,17 +55,16 @@ class KeyboardController:
 
     def on_release(self, key):
         try:
-            if key not in self._key_event_map:
-                return
-            self._event_handler.handle(KeyReleasedEvent(key))
+            if KeyEventMap.has_on_release(key):
+                self._event_handler.handle(KeyReleasedEvent(key))
         except Exception as e:
             self._logger.error(f"Error on release: {e}", exc_info=True)
 
     def on_press(self, key):
         try:
-            if key in self._key_event_map:
-                event_class = self._key_event_map[key]
-                self._event_handler.handle(event_class())
+            event_class = KeyEventMap.get_on_press(key)
+            if event_class:
+                self._event_handler.handle(event_class.value[2]())
             elif key == keyboard.Key.esc:
                 self.stop()
         except Exception as e:

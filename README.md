@@ -43,20 +43,12 @@ Keyboard controller application that runs on your laptop or desktop.
 - Sends UDP commands to the server or directly to the device
 - Clean terminal handling with proper restoration on exit
 
-**Usage:**
-
-```bash
-cd client
-source venv/bin/activate
-pip install -r requirements.txt
-python main.py
-```
-
 **Controls:**
 
 - Arrow Keys / WASD: Movement (Forward/Backward/Left/Right)
 - Space: Toggle car ON/OFF
-- Shift: Toggle obstacle detection ON/OFF
+- Shift left: Toggle obstacle detection ON/OFF
+- Shift right: Toggle car ON/OFF
 - ESC: Exit application
 
 #### 3. `server/`
@@ -86,10 +78,11 @@ Raspberry Pi application that controls the physical 4WD car.
 - **Application Layer:** Command handlers, use cases
 - **Infrastructure Layer:** GPIO adapters, UDP server, event bus
 
-**Usage:**
+**Standalon Usage for testing purposes:**
 
 ```bash
 cd device
+python3 -m venv venv --system-site-packages
 source venv/bin/activate
 pip install -r requirements.txt
 python main.py
@@ -105,11 +98,15 @@ python main.py
 
 ### Installation
 
-1. **Clone the repository:**
+1. **Clone the repository and install system dependencies:**
 
 ```bash
 git clone https://github.com/JosePFs/4wd-car.git
 cd 4wd-car
+
+# On Raspberry Pi OS / Debian
+sudo apt-get update
+sudo apt-get install -y python3-libcamera python3-picamera2 python3-smbus
 ```
 
 2. **Setup config_common:**
@@ -117,6 +114,8 @@ cd 4wd-car
 ```bash
 cd config_common
 # Edit .env or environment variables as needed
+export UDP_HOST="x.x.x.x"  # Raspberry Pi IP
+export UDP_PORT="5000"
 ```
 
 3. **Setup client:**
@@ -132,29 +131,37 @@ pip install -r requirements.txt
 
 ```bash
 cd device
-python -m venv venv
+python3 -m venv venv --system-site-packages
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-5. **Configure environment:**
-   Create a `.env` file or export environment variables:
+5. **Setup server (on Raspberry Pi):**
 
 ```bash
-export UDP_HOST="192.168.1.100"  # Raspberry Pi IP
-export UDP_PORT="5000"
+cd server
+python3 -m venv venv --system-site-packages
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### Running the System
 
-1. **Start the device (Raspberry Pi):**
+1. **Start the device for testing (Raspberry Pi):**
 
 ```bash
 cd device
 python main.py
 ```
 
-2. **Start the client (laptop/desktop):**
+2. **Start the server (Raspberry Pi):**
+
+```bash
+cd server
+python main.py
+```
+
+3. **Start the client (laptop/desktop):**
 
 ```bash
 cd client
@@ -173,13 +180,7 @@ The `config_common` module provides:
 
 ```python
 class Command(Enum):
-    FORWARD = "car_forward"
-    BACKWARD = "car_backward"
-    LEFT = "car_left"
-    RIGHT = "car_right"
-    STOP = "car_stop"
-    TOGGLE_CAR_ON_OFF = "car_toggle_on_off"
-    TOGGLE_OBSTACLE_DETECTION_ON_OFF = "obstacles_detector_toggle_on_off"
+    [...]
 ```
 
 **Environment Variables:**
