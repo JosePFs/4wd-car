@@ -14,6 +14,10 @@ class Speed(ValueObject[int]):
             raise InvalidValueException(f"Speed {self.value} is not valid")
 
     @staticmethod
+    def default() -> "Speed":
+        return Speed(value=1000)
+
+    @staticmethod
     def from_rpm(value: int) -> "Speed":
         return Speed(value=value)
 

@@ -4,7 +4,7 @@ import logging
 from logging import Logger
 
 from .commands import CarCommand, CommandResult
-from ..domain import Distance, Speed
+from ..domain import Distance
 
 
 if TYPE_CHECKING:
@@ -60,18 +60,15 @@ class CarEmergencyStopCommand(CarCommand):
 class CarAvoidObstacleCommand(CarCommand):
     distance: Distance
 
-    logger: ClassVar[Logger] = logging.getLogger(__name__)
+    _logger: ClassVar[Logger] = logging.getLogger(__name__)
 
     def execute(self, car: 'Car') -> CommandResult:
-        self.logger.info(
+        self._logger.info(
             f"🔍 CarAvoidObstacleCommand: distance={self.distance}")
         if self.distance.value < car.critical_distance.value:
-            self.logger.info(f"🔍 CarAvoidObstacleCommand: critical distance")
-            _, events = car.emergency_stop().into_parts()
+            _, events = car.stop_by_obstacle(self.distance).into_parts()
         elif self.distance.value < car.safe_distance.value:
-            self.logger.info(f"🔍 CarAvoidObstacleCommand: safe distance")
-            _, events = car.slow_down(Speed.from_percentage(30)).into_parts()
+            _, events = car.slow_down().into_parts()
         else:
-            self.logger.info(f"🔍 CarAvoidObstacleCommand: no action needed")
-            events = []
+            _, events = car.speed_up().into_parts()
         return CommandResult(events=events)

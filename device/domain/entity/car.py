@@ -7,20 +7,22 @@ from ..vo.distance import Distance
 from ..vo.speed import Speed
 from .car_navigation import CarNavigation
 from ..port import Leds, Buzzer, CarMotors
-from .car_navigation_modes import NormalNavigation
-from ..event import CarTurnOnEvent, CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent, CarSlowDownEvent
+from .car_navigation_modes import TurnedOffNavigation
+from ..event import CarTurnOnEvent, CarTurnOffEvent, CarForwardEvent, CarBackwardEvent, CarTurnLeftEvent, CarTurnRightEvent, CarStopEvent, CarEmergencyStopEvent, CarSlowDownEvent, CarShutdownEvent, CarStoppedByObstacleEvent, CarSpeedUpEvent
 
 
 class Car(Entity):
     logger: Logger = logging.getLogger(__name__)
 
-    def __init__(self, motors: CarMotors, leds: Leds, buzzer: Buzzer, min_distance: Distance = Distance.from_centimeters(30)) -> None:
+    def __init__(self, motors: CarMotors, leds: Leds, buzzer: Buzzer, critical_distance: Distance = Distance.from_centimeters(50), default_speed: Speed = Speed.default(), slow_down_speed: Speed = Speed.from_percentage(60)) -> None:
         super().__init__()
-        self.navigation: CarNavigation = NormalNavigation(self)
+        self.navigation: CarNavigation = TurnedOffNavigation(self)
         self.motors: CarMotors = motors
         self.leds: Leds = leds
         self.buzzer: Buzzer = buzzer
-        self.min_distance: Distance = min_distance
+        self.min_distance: Distance = critical_distance
+        self.default_speed: Speed = default_speed
+        self.slow_down_speed: Speed = slow_down_speed
         self._is_on = False
 
     @property
@@ -33,17 +35,16 @@ class Car(Entity):
 
     @property
     def safe_distance(self) -> Distance:
-        return Distance.from_centimeters(self.min_distance.value * 1.5)
+        return Distance.from_centimeters(self.min_distance.value * 2)
 
     def turn_on(self) -> EntityWithEvents['Car']:
         self._is_on = True
+        self.navigation.turn_on()
         return EntityWithEvents['Car'](self).with_event(CarTurnOnEvent())
 
     def turn_off(self) -> EntityWithEvents['Car']:
-        self.navigation.stop()
-        self.motors.turn_off()
-        self.leds.turn_off()
-        self.buzzer.turn_off()
+        self._is_on = False
+        self.navigation.turn_off()
         return EntityWithEvents['Car'](self).with_event(CarTurnOffEvent())
 
     def forward(self) -> EntityWithEvents['Car']:
@@ -70,9 +71,17 @@ class Car(Entity):
         self.navigation.emergency_stop()
         return EntityWithEvents['Car'](self).with_event(CarEmergencyStopEvent())
 
-    def slow_down(self, speed: Speed) -> EntityWithEvents['Car']:
-        self.motors.slow_down(speed)
+    def slow_down(self) -> EntityWithEvents['Car']:
+        self.navigation.slow_down(self.slow_down_speed)
         return EntityWithEvents['Car'](self).with_event(CarSlowDownEvent())
+
+    def stop_by_obstacle(self, distance: Distance) -> EntityWithEvents['Car']:
+        self.navigation.stop_by_obstacle(distance)
+        return EntityWithEvents['Car'](self).with_event(CarStoppedByObstacleEvent(payload=distance))
+
+    def speed_up(self) -> EntityWithEvents['Car']:
+        self.navigation.speed_up(self.default_speed)
+        return EntityWithEvents['Car'](self).with_event(CarSpeedUpEvent())
 
     def navigate(self, action: Callable[[CarMotors], None]) -> None:
         action(self.motors)
@@ -81,6 +90,13 @@ class Car(Entity):
         self.logger.info(
             f"\n🔄 Navigation mode transition: {self.navigation.get_type().value} -> {new_navigation_mode.get_type().value}")
         self.navigation = new_navigation_mode
+
+    def shutdown(self) -> EntityWithEvents['Car']:
+        self.navigation.stop()
+        self.motors.turn_off()
+        self.leds.turn_off()
+        self.buzzer.turn_off()
+        return EntityWithEvents['Car'](self).with_event(CarShutdownEvent())
 
     def __str__(self) -> str:
         return f"Car(id={self.id})"

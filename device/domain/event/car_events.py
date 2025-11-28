@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from .event import Event
 from ..vo.speed import Speed
+from ..vo.distance import Distance
 
 
 @dataclass(frozen=True)
@@ -69,8 +70,32 @@ class CarEmergencyStopEvent(Event[None]):
 
 
 @dataclass(frozen=True)
+class CarStoppedByObstacleEvent(Event[Distance]):
+    name: str = "car_stopped_by_obstacle"
+
+    def __str__(self) -> str:
+        return f"CarStoppedByObstacleEvent(name={self.name}, distance={self.payload})"
+
+
+@dataclass(frozen=True)
 class CarSlowDownEvent(Event[Speed]):
     name: str = "car_slow_down"
 
     def __str__(self) -> str:
         return f"CarSlowDownEvent(name={self.name})"
+
+
+@dataclass(frozen=True)
+class CarSpeedUpEvent(Event[None]):
+    name: str = "car_speed_up"
+
+    def __str__(self) -> str:
+        return f"CarSpeedUpEvent(name={self.name})"
+
+
+@dataclass(frozen=True)
+class CarShutdownEvent(Event[None]):
+    name: str = "car_shutdown"
+
+    def __str__(self) -> str:
+        return f"CarShutdownEvent(name={self.name})"

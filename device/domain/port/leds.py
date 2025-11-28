@@ -14,6 +14,3 @@ class Leds(ABC):
     @abstractmethod
     def set_red(self) -> None:
         ...
-
-    def __str__(self) -> str:
-        return f"Leds(id={self.id})"

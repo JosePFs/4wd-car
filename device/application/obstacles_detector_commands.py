@@ -1,9 +1,7 @@
 from typing import TYPE_CHECKING
 
 from .commands import ObstaclesDetectorCommand, CommandResult
-
-if TYPE_CHECKING:
-    from domain import ObstaclesDetector
+from ..domain import ObstaclesDetector
 
 
 class ObstaclesDetectorToggleOnOffCommand(ObstaclesDetectorCommand):

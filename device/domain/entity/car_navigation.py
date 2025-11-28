@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import TYPE_CHECKING
+import logging
+from logging import Logger
+
+from ..vo.distance import Distance
+from ..vo.speed import Speed
 
 if TYPE_CHECKING:
     from .car import Car
@@ -10,9 +15,12 @@ class CarNavigationType(Enum):
     NORMAL = "normal"
     OBSTACLE_DETECTED = "obstacle_detected"
     EMERGENCY_STOP = "emergency_stop"
+    TURNED_OFF = "turned_off"
 
 
 class CarNavigation(ABC):
+    logger: Logger = logging.getLogger(__name__)
+
     def __init__(self, car: 'Car') -> None:
         self.car = car
 
@@ -43,7 +51,23 @@ class CarNavigation(ABC):
         ...
 
     @abstractmethod
-    def obstacle_detected(self, distance: float) -> None:
+    def stop_by_obstacle(self, distance: Distance) -> None:
+        ...
+
+    @abstractmethod
+    def slow_down(self, speed: Speed) -> None:
+        ...
+
+    @abstractmethod
+    def speed_up(self, speed: Speed) -> None:
+        ...
+
+    @abstractmethod
+    def turn_on(self) -> None:
+        ...
+
+    @abstractmethod
+    def turn_off(self) -> None:
         ...
 
     @abstractmethod

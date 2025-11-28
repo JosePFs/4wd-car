@@ -10,6 +10,10 @@ class CarMotors(ABC):
         ...
 
     @abstractmethod
+    def speed_up(self, speed: Speed) -> None:
+        ...
+
+    @abstractmethod
     def turn_off(self) -> None:
         ...
 
@@ -32,6 +36,3 @@ class CarMotors(ABC):
     @abstractmethod
     def stop(self) -> None:
         ...
-
-    def __str__(self) -> str:
-        return f"CarMotors(id={self.id})"

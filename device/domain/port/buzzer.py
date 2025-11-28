@@ -18,6 +18,3 @@ class Buzzer(ABC):
     @abstractmethod
     def silence(self) -> None:
         ...
-
-    def __str__(self) -> str:
-        return f"Buzzer(id={self.id})"

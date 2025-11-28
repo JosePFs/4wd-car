@@ -2,6 +2,7 @@ import logging
 from logging import Logger
 
 from .entity import Entity
+from ..exception import ObstaclesDetectorException
 from ..port import ObstaclesDetectorDistance, ObstaclesDetectorServo
 from .entity import EntityWithEvents
 from ..event import ObstaclesDetectorTurnOnEvent, ObstaclesDetectorTurnOffEvent, ObstacleDetectedEvent
@@ -24,6 +25,8 @@ class ObstaclesDetector(Entity):
 
     def turn_on(self) -> EntityWithEvents['ObstaclesDetector']:
         self._is_on = True
+        self.servo.turn_on()
+        self.distance_detector.turn_on()
         return EntityWithEvents['ObstaclesDetector'](self).with_event(ObstaclesDetectorTurnOnEvent())
 
     def turn_off(self) -> EntityWithEvents['ObstaclesDetector']:
@@ -33,6 +36,8 @@ class ObstaclesDetector(Entity):
         return EntityWithEvents['ObstaclesDetector'](self).with_event(ObstaclesDetectorTurnOffEvent())
 
     def detect(self) -> EntityWithEvents['ObstaclesDetector']:
+        if not self._is_on:
+            raise ObstaclesDetectorException("Obstacles detector is not on")
         distance = Distance.from_centimeters(
             self.distance_detector.get_distance())
         self.logger.info(f"🔍 Obstacles detector: {distance}")

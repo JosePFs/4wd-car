@@ -30,16 +30,16 @@ class CarCommandsHandler(Thread):
                 continue
             except CarException as e:
                 self._logger.error(f"Car exception: {e}")
-                self._stop_car()
+                self._shutdown_car()
                 raise e
             except Exception as e:
                 self._logger.error(f"Error executing car command: {e}")
-                self._stop_car()
+                self._shutdown_car()
                 raise UnhandledException() from e
 
-        self._stop_car()
+        self._shutdown_car()
 
-    def _stop_car(self) -> None:
+    def _shutdown_car(self) -> None:
         if self._car.is_on:
             self._car.turn_off()
 

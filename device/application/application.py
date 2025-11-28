@@ -1,8 +1,11 @@
 import logging
 from logging import Logger
 from queue import Queue
+from threading import Thread, Event
+import time
 
 from ..domain import Car, ObstaclesDetector, EventBus, ObstacleDetectedEvent, DomainException
+from ..domain import ObstaclesDetectorTurnOnEvent, ObstaclesDetectorTurnOffEvent
 from .commands import CarCommand, ObstaclesDetectorCommand
 from .car_commands_handler import CarCommandsHandler
 from .obstacle_detector_commands_handler import ObstaclesDetectorCommandsHandler
@@ -29,6 +32,45 @@ class Application:
 
         self._event_bus.subscribe(
             ObstacleDetectedEvent, lambda event: self._queue_car_command(CarAvoidObstacleCommand(event.payload)))
+        self._event_bus.subscribe(
+            ObstaclesDetectorTurnOnEvent, lambda event: self._start_periodic_detection())
+        self._event_bus.subscribe(
+            ObstaclesDetectorTurnOffEvent, lambda event: self._stop_periodic_detection())
+
+        self._detection_active = Event()
+        self._detection_thread: Thread | None = None
+        self._detection_interval = 0.5
+
+    def _start_periodic_detection(self) -> None:
+        if self._detection_thread is not None and self._detection_thread.is_alive():
+            self._logger.warning("Periodic detection already running")
+            return
+
+        self._logger.info("Starting periodic obstacle detection")
+        self._detection_active.set()
+        self._detection_thread = Thread(
+            target=self._detection_loop, daemon=True)
+        self._detection_thread.start()
+
+    def _stop_periodic_detection(self) -> None:
+        if self._detection_thread is None:
+            return
+
+        self._logger.info("Stopping periodic obstacle detection")
+        self._detection_active.clear()
+        if self._detection_thread.is_alive():
+            self._detection_thread.join(timeout=2.0)
+        self._detection_thread = None
+
+    def _detection_loop(self) -> None:
+        while self._detection_active.is_set():
+            try:
+                self._queue_obstacles_detector_command(
+                    ObstaclesDetectorDetectCommand())
+                time.sleep(self._detection_interval)
+            except Exception as e:
+                self._logger.error(
+                    f"Error in detection loop: {e}", exc_info=True)
 
     def start(self) -> None:
         try:
@@ -42,6 +84,7 @@ class Application:
             raise e
 
     def stop(self) -> None:
+        self._stop_periodic_detection()
         self._event_bus.stop()
         self._car_commands_handler.stop()
         self._obstacles_commands_handler.stop()
