@@ -28,34 +28,15 @@ def main() -> int:
     try:
         env = Env().load()
         with (UDPServer(UDPPort(env.udp_port)) as udp_server, ApplicationBuilder() as app):
-            command = udp_server.receive()
-            match command:
-                case Command.FORWARD:
-                    logger.info("Forward")
-                    app.car_move_forward()
-                case Command.BACKWARD:
-                    logger.info("Backward")
-                    app.car_move_backward()
-                case Command.LEFT:
-                    logger.info("Left")
-                    app.car_turn_left()
-                case Command.RIGHT:
-                    logger.info("Right")
-                    app.car_turn_right()
-                case Command.STOP:
-                    logger.info("Stop")
-                    app.car_stop()
-                case Command.TOGGLE_CAR_ON_OFF:
-                    logger.info("Toggle car on off")
-                    app.car_toggle_on_off()
-                case Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF:
-                    logger.info("Toggle obstacle detection on off")
-                    app.obstacles_detector_toggle_on_off()
-                case _:
-                    logger.error(f"Unknown command: {command}")
+            udp_server.on(Command.FORWARD, app.car_move_forward)
+            udp_server.on(Command.BACKWARD, app.car_move_backward)
+            udp_server.on(Command.LEFT, app.car_turn_left)
+            udp_server.on(Command.RIGHT, app.car_turn_right)
+            udp_server.on(Command.STOP, app.car_stop)
+            udp_server.on(Command.TOGGLE_CAR_ON_OFF, app.car_toggle_on_off)
+            udp_server.on(Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF, app.obstacles_detector_toggle_on_off)
 
             stop_event.wait()
-
     except KeyboardInterrupt:
         logger.info("Server stopped")
         return 0

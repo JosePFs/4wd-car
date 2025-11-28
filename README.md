@@ -104,9 +104,9 @@ python main.py
 git clone https://github.com/JosePFs/4wd-car.git
 cd 4wd-car
 
-# On Raspberry Pi OS / Debian
+# On Raspberry Pi OS
 sudo apt-get update
-sudo apt-get install -y python3-libcamera python3-picamera2 python3-smbus
+sudo apt-get install -y python3-libcamera python3-smbus libcap-dev
 ```
 
 2. **Setup config_common:**
