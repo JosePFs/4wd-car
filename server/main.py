@@ -34,9 +34,11 @@ def main() -> int:
             udp_server.on(Command.RIGHT, app.car_turn_right)
             udp_server.on(Command.STOP, app.car_stop)
             udp_server.on(Command.TOGGLE_CAR_ON_OFF, app.car_toggle_on_off)
-            udp_server.on(Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF, app.obstacles_detector_toggle_on_off)
+            udp_server.on(Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF,
+                          app.obstacles_detector_toggle_on_off)
 
             stop_event.wait()
+
     except KeyboardInterrupt:
         logger.info("Server stopped")
         return 0

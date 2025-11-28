@@ -34,8 +34,8 @@ class ApplicationBuilder:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._app is not None:
             try:
-                self._logger.info("Stopping application...")
                 self._app.stop()
+                self._logger.info("Application stopped")
             except Exception as e:
                 self._logger.error(
                     f"Error during application shutdown: {e}", exc_info=True)

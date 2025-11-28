@@ -29,7 +29,6 @@ class UDPServer(Thread):
         self._stop_event = Event()
 
     def run(self) -> None:
-        self._start()
         while not self._stop_event.is_set():
             try:
                 command = self._receive()
@@ -43,33 +42,50 @@ class UDPServer(Thread):
         self._callbacks[command] = callback
 
     def _receive(self) -> Optional[Command]:
-        data, addr = self.sock.recvfrom(1024)
-        self._logger.info(f"Message received from {addr}: {data}")
         try:
-            command = Command.from_string(data.decode())
-        except ValueError:
-            self._logger.error(f"Invalid command: {data.decode()}")
+            data, addr = self.sock.recvfrom(1024)
+            self._logger.info(f"Message received from {addr}: {data}")
+            try:
+                command = Command.from_string(data.decode())
+            except ValueError:
+                self._logger.error(f"Invalid command: {data.decode()}")
+                return None
+            return command
+        except socket.timeout:
             return None
-        return command
+        except OSError as e:
+            if self._stop_event.is_set():
+                return None
+            raise e
 
     def _handle_command(self, command: Command) -> None:
         if command in self._callbacks:
             self._callbacks[command]()
         else:
-            self._logger.error(f"No callback registered for command: {command}")
+            self._logger.error(
+                f"No callback registered for command: {command}")
 
     def _start(self):
-        self.sock.bind(("", self._port.port))
+        self.sock.settimeout(0.1)
+        try:
+            self.sock.bind(("", self._port.port))
+        except Exception as e:
+            self._logger.error(f"Error binding UDP server: {e}")
+            raise e
         self._logger.info(f"UDP server started on port {self._port.port}")
         self.start()
 
-    def __enter__(self):
-        self._logger.info("Starting UDP server...")
-        self.start()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def _stop(self) -> None:
         self._stop_event.set()
         self.sock.close()
         self.join()
+
+    def __enter__(self):
+        self._logger.info("Starting UDP server...")
+        self._start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._stop()
+        self._logger.info("UDP server stopped")
         return False
