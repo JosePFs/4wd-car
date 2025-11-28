@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import logging
 from logging import Logger
 
-from config_common import Command
+from config_common import CommandWithKey
 
 @dataclass(frozen=True)
 class UDPTarget:
@@ -21,8 +21,8 @@ class UDPClient:
         self.target = target
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def send(self, msg: Command):
-        self.sock.sendto(msg.value.encode(), self.target.address)
+    def send(self, msg: CommandWithKey):
+        self.sock.sendto(str(msg).encode(), self.target.address)
         self._logger.info(f"Message sent: {msg} to {self.target.address}")
 
     def close(self):

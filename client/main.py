@@ -2,7 +2,7 @@ import sys
 import logging
 
 from config_common import Command
-from event import UpPressedEvent, DownPressedEvent, LeftPressedEvent, RightPressedEvent, SpacePressedEvent, ShiftPressedEvent
+from event import UpPressedEvent, DownPressedEvent, LeftPressedEvent, RightPressedEvent, ShiftLeftPressedEvent, ShiftRightPressedEvent, KeyReleasedEvent
 from application import ApplicationBuilder
 
 logging.basicConfig(level=logging.INFO)
@@ -16,8 +16,9 @@ def main() -> int:
               .on(DownPressedEvent, Command.BACKWARD)
               .on(LeftPressedEvent, Command.LEFT)
               .on(RightPressedEvent, Command.RIGHT)
-              .on(SpacePressedEvent, Command.TOGGLE_CAR_ON_OFF)
-              .on(ShiftPressedEvent, Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF)) as _app:
+              .on(ShiftRightPressedEvent, Command.TOGGLE_CAR_ON_OFF)
+              .on(ShiftLeftPressedEvent, Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF)
+              .on(KeyReleasedEvent, Command.STOP)) as _app:
             logger.info("Client started")
 
     except KeyboardInterrupt:

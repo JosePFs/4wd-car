@@ -72,7 +72,7 @@ class ApplicationBuilder:
         event_handler = EventHandler()
         for event_type, command in self._callbacks:
             event_handler.add_callback(
-                event_type, partial(lambda event, cmd: udp_client.send(cmd), cmd=command))
+                event_type, partial(lambda event, cmd: udp_client.send(cmd.with_key(getattr(event, 'key', None))), cmd=command))
         keyboard_controller = KeyboardController(event_handler)
         return Application(keyboard_controller, udp_client)
 

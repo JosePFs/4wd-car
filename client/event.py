@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from pynput import keyboard
 
 dataclass(frozen=True)
 
@@ -53,16 +54,24 @@ class RightPressedEvent(Event):
 
 
 @dataclass(frozen=True)
-class SpacePressedEvent(Event):
-    name: str = "space"
+class ShiftLeftPressedEvent(Event):
+    name: str = "shift_left"
 
     def __str__(self) -> str:
-        return f"SpacePressedEvent(name={self.name})"
+        return f"ShiftLeftPressedEvent(name={self.name})"
 
 
 @dataclass(frozen=True)
-class ShiftPressedEvent(Event):
-    name: str = "ctrl"
+class ShiftRightPressedEvent(Event):
+    name: str = "shift_right"
 
     def __str__(self) -> str:
-        return f"CtrlPressedEvent(name={self.name})"
+        return f"ShiftRightPressedEvent(name={self.name})"
+
+@dataclass(frozen=True)
+class KeyReleasedEvent(Event):
+    key: keyboard.Key | keyboard.KeyCode
+    name: str = "key_released"
+
+    def __str__(self) -> str:
+        return f"KeyReleasedEvent(name={self.name}, key={self.key})"
