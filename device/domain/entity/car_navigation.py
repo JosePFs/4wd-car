@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 class CarNavigationType(Enum):
     NORMAL = "normal"
-    OBSTACLE_DETECTED = "obstacle_detected"
     EMERGENCY_STOP = "emergency_stop"
     TURNED_OFF = "turned_off"
 
@@ -48,10 +47,6 @@ class CarNavigation(ABC):
 
     @abstractmethod
     def stop(self) -> None:
-        ...
-
-    @abstractmethod
-    def stop_by_obstacle(self, distance: Distance) -> None:
         ...
 
     @abstractmethod

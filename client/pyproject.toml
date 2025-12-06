@@ -3,28 +3,33 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "device"
+name = "client"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "rpi_ws281x==5.0.0",
-    "spidev==3.8",
-    "smbus2>=0.5.0",
-    "numpy==2.3.5",
-    "gpiozero==2.0.1",
+    "shared",
+    "evdev==1.9.2",
+    "pynput==1.8.1",
+    "python-xlib==0.33",
+    "six==1.17.0",
 ]
 
 [project.optional-dependencies]
 testing = ["pytest>=7.4.0", "pytest-cov>=4.1.0"]
 
 [tool.setuptools]
-packages = ["device"]
-package-dir = { "device" = "." }
+packages = ["client"]
+package-dir = { "client" = "." }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = ["-v", "--cov=.", "--cov-report=term-missing", "--cov-report=html"]
+addopts = [
+    "-v",
+    "--cov=.",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
 
 [tool.coverage.run]
 source = ["."]
@@ -37,3 +42,4 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
+

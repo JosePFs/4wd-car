@@ -10,7 +10,7 @@ from ..vo.distance import Distance
 
 
 class ObstaclesDetector(Entity):
-    logger: Logger = logging.getLogger(__name__)
+    _logger: Logger = logging.getLogger(__name__)
 
     def __init__(self, distance_detector: ObstaclesDetectorDistance, servo: ObstaclesDetectorServo) -> None:
         super().__init__()
@@ -40,7 +40,7 @@ class ObstaclesDetector(Entity):
             raise ObstaclesDetectorException("Obstacles detector is not on")
         distance = Distance.from_centimeters(
             self.distance_detector.get_distance())
-        self.logger.info(f"🔍 Obstacles detector: {distance}")
+        self._logger.info(f"🔍 Obstacles detector: {distance}")
         return EntityWithEvents['ObstaclesDetector'](self).with_event(ObstacleDetectedEvent(payload=distance))
 
     def __str__(self) -> str:

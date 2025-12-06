@@ -56,19 +56,10 @@ class CarEmergencyStopCommand(CarCommand):
         return CommandResult(events=events)
 
 
-@dataclass(frozen=True)
-class CarAvoidObstacleCommand(CarCommand):
-    distance: Distance
-
-    _logger: ClassVar[Logger] = logging.getLogger(__name__)
-
+class CarToggleAutonomousPilotOnOffCommand(CarCommand):
     def execute(self, car: 'Car') -> CommandResult:
-        self._logger.info(
-            f"🔍 CarAvoidObstacleCommand: distance={self.distance}")
-        if self.distance.value < car.critical_distance.value:
-            _, events = car.stop_by_obstacle(self.distance).into_parts()
-        elif self.distance.value < car.safe_distance.value:
-            _, events = car.slow_down().into_parts()
+        if car.autonomous_pilot_is_enabled:
+            _, events = car.disable_autonomous_pilot().into_parts()
         else:
-            _, events = car.speed_up().into_parts()
+            _, events = car.enable_autonomous_pilot().into_parts()
         return CommandResult(events=events)

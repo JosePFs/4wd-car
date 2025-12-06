@@ -2,7 +2,7 @@ from .domain_exception import DomainException, UnhandledException
 from .entity_exception import EntityIdException
 from .command_exception import InvalidCommandException
 from .value_object_exception import InvalidValueException
-from .car_exception import CarException
+from .car_exception import CarException, AutonomousPilotException
 from .obstacles_exception import ObstaclesDetectorException
 
 __all__ = [
@@ -12,5 +12,6 @@ __all__ = [
     "InvalidCommandException",
     "InvalidValueException",
     "CarException",
+    "AutonomousPilotException",
     "ObstaclesDetectorException",
 ]

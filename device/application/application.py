@@ -9,7 +9,7 @@ from ..domain import ObstaclesDetectorTurnOnEvent, ObstaclesDetectorTurnOffEvent
 from .commands import CarCommand, ObstaclesDetectorCommand
 from .car_commands_handler import CarCommandsHandler
 from .obstacle_detector_commands_handler import ObstaclesDetectorCommandsHandler
-from .car_commands import CarAvoidObstacleCommand, CarMoveForwardCommand, CarMoveBackwardCommand, CarTurnLeftCommand, CarTurnRightCommand, CarStopCommand, CarEmergencyStopCommand, CarToggleOnOffCommand
+from .car_commands import CarMoveForwardCommand, CarMoveBackwardCommand, CarToggleAutonomousPilotOnOffCommand, CarTurnLeftCommand, CarTurnRightCommand, CarStopCommand, CarEmergencyStopCommand, CarToggleOnOffCommand
 from .obstacles_detector_commands import ObstaclesDetectorToggleOnOffCommand, ObstaclesDetectorDetectCommand
 
 
@@ -30,8 +30,6 @@ class Application:
         self._obstacles_commands_handler = ObstaclesDetectorCommandsHandler(
             obstacles_detector, self.obstacles_commands, self._event_bus)
 
-        self._event_bus.subscribe(
-            ObstacleDetectedEvent, lambda event: self._queue_car_command(CarAvoidObstacleCommand(event.payload)))
         self._event_bus.subscribe(
             ObstaclesDetectorTurnOnEvent, lambda event: self._start_periodic_detection())
         self._event_bus.subscribe(
@@ -106,14 +104,6 @@ class Application:
 
     def car_toggle_on_off(self) -> None:
         self._queue_car_command(CarToggleOnOffCommand())
-
-    def obstacles_detector_toggle_on_off(self) -> None:
-        self._queue_obstacles_detector_command(
-            ObstaclesDetectorToggleOnOffCommand())
-
-    def obstacles_detector_detect(self) -> None:
-        self._queue_obstacles_detector_command(
-            ObstaclesDetectorDetectCommand())
 
     def _queue_car_command(self, cmd: CarCommand) -> None:
         self.car_commands.put(cmd)

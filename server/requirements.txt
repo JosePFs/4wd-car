@@ -1,2 +1,0 @@
--e ../config_common
--e ../device

@@ -3,23 +3,17 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "device"
+name = "server"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = [
-    "rpi_ws281x==5.0.0",
-    "spidev==3.8",
-    "smbus2>=0.5.0",
-    "numpy==2.3.5",
-    "gpiozero==2.0.1",
-]
+dependencies = ["shared", "device"]
 
 [project.optional-dependencies]
 testing = ["pytest>=7.4.0", "pytest-cov>=4.1.0"]
 
 [tool.setuptools]
-packages = ["device"]
-package-dir = { "device" = "." }
+packages = ["server"]
+package-dir = { "server" = "." }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

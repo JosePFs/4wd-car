@@ -8,30 +8,27 @@ This project is organized into four independent modules:
 
 ```
 4wd-car/
-├── config_common/     # Shared configuration and constants
-├── client/            # Keyboard controller
-├── server/            # UDP server relay
-└── device/            # Raspberry Pi car control logic
+├── shared/    # Shared configuration and constants
+├── client/    # Keyboard controller and UDP client
+├── server/    # UDP server relay
+└── device/    # Raspberry Pi car control logic
 ```
 
 ### Modules
 
-#### 1. `config_common/`
+#### 1. `shared/`
 
 Shared configuration package used by `client` and `server`.
 
 **Purpose:**
 
-- Define common commands (FORWARD, BACKWARD, LEFT, RIGHT, etc.)
+- Define common commands
 - Share environment variables (UDP host, port, etc.)
 - Maintain consistent protocol across modules
 
 **Installation:**
-Each module includes this as a local dependency via `requirements.txt`:
 
-```txt
--e ../config_common
-```
+Each module is included as a local dependency via `pyproject.toml`
 
 #### 2. `client/`
 
@@ -39,17 +36,9 @@ Keyboard controller application that runs on your laptop or desktop.
 
 **Features:**
 
-- Captures keyboard input (arrow keys, WASD, Space, Shift)
+- Captures keyboard input
 - Sends UDP commands to the server or directly to the device
 - Clean terminal handling with proper restoration on exit
-
-**Controls:**
-
-- Arrow Keys / WASD: Movement (Forward/Backward/Left/Right)
-- Space: Toggle car ON/OFF
-- Shift left: Toggle obstacle detection ON/OFF
-- Shift right: Toggle car ON/OFF
-- ESC: Exit application
 
 #### 3. `server/`
 
@@ -74,17 +63,17 @@ Raspberry Pi application that controls the physical 4WD car.
 
 **Architecture:**
 
-- **Domain Layer:** Entities (Car, ObstacleDetector), Value Objects (Speed, Distance), Events
+- **Domain Layer:** Entities (Car, Pilot and ObstacleDetector), Value Objects (Speed, Distance, ...), Events
 - **Application Layer:** Command handlers, use cases
 - **Infrastructure Layer:** GPIO adapters, UDP server, event bus
 
-**Standalon Usage for testing purposes:**
+**Standalone Usage for demo purposes:**
 
 ```bash
 cd device
 python3 -m venv venv --system-site-packages
 source venv/bin/activate
-pip install -r requirements.txt
+pip install .
 python main.py
 ```
 
@@ -109,13 +98,19 @@ sudo apt-get update
 sudo apt-get install -y i2c-tools python3-libcamera python3-smbus libcap-dev
 ```
 
-2. **Setup config_common:**
+2. **Setup shared:**
 
 ```bash
-cd config_common
+cd shared
 # Edit .env or environment variables as needed
 export UDP_HOST="x.x.x.x"  # Raspberry Pi IP
 export UDP_PORT="5000"
+```
+
+```bash
+python3 -m venv venv --system-site-packages
+source venv/bin/activate
+pip install .
 ```
 
 3. **Setup client:**
@@ -124,7 +119,7 @@ export UDP_PORT="5000"
 cd client
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install .
 ```
 
 4. **Setup device (on Raspberry Pi):**
@@ -133,7 +128,7 @@ pip install -r requirements.txt
 cd device
 python3 -m venv venv --system-site-packages
 source venv/bin/activate
-pip install -r requirements.txt
+pip install .
 ```
 
 5. **Setup server (on Raspberry Pi):**
@@ -142,51 +137,55 @@ pip install -r requirements.txt
 cd server
 python3 -m venv venv --system-site-packages
 source venv/bin/activate
-pip install -r requirements.txt
+pip install .
 ```
 
 ### Running the System
 
-1. **Start the device for testing (Raspberry Pi):**
+0. **Optional, only for testing purposes, run device (Raspberry Pi):**
 
-```bash
-cd device
-python main.py
-```
+   ```bash
+   cd device
+   python main.py
+   ```
 
-2. **Start the server (Raspberry Pi):**
+1. **Start the server (Raspberry Pi):**
 
-```bash
-cd server
-python main.py
-```
+   ```bash
+   cd server
+   python main.py
+   ```
 
-3. **Start the client (laptop/desktop):**
+2. **Start the client (laptop/desktop):**
 
-```bash
-cd client
-python main.py
-```
+   ```bash
+   cd client
+   python main.py
+   ```
 
-3. **Control the car using keyboard!**
+   **Control the car using keyboard**
+
+   - `0`: Deactivate current mode
+   - `1`: Activate autonomous mode with obstancles avoidance
+   - `2`: Activate autonomous mode following walls
+   - `3`: Activate manual mode
 
 ## Configuration
 
-### Shared Configuration (`config_common/`)
-
-The `config_common` module provides:
-
-**Commands:**
-
-```python
-class Command(Enum):
-    [...]
-```
+### Shared Configuration (`shared/`)
 
 **Environment Variables:**
 
 - `UDP_HOST`: Target device IP address
 - `UDP_PORT`: UDP port for communication (default: 5000)
+
+### Testing packages
+
+```bash
+cd <package>
+pip install -e ".[testing]"
+pytest
+```
 
 ## Architecture Highlights
 

@@ -70,14 +70,6 @@ class CarEmergencyStopEvent(Event[None]):
 
 
 @dataclass(frozen=True)
-class CarStoppedByObstacleEvent(Event[Distance]):
-    name: str = "car_stopped_by_obstacle"
-
-    def __str__(self) -> str:
-        return f"CarStoppedByObstacleEvent(name={self.name}, distance={self.payload})"
-
-
-@dataclass(frozen=True)
 class CarSlowDownEvent(Event[Speed]):
     name: str = "car_slow_down"
 
@@ -92,6 +84,27 @@ class CarSpeedUpEvent(Event[None]):
     def __str__(self) -> str:
         return f"CarSpeedUpEvent(name={self.name})"
 
+
+@dataclass(frozen=True)
+class AutonomousPilotEnabledEvent(Event[None]):
+    name: str = "autonomous_pilot_enabled"
+
+    def __str__(self) -> str:
+        return f"AutonomousPilotEnabledEvent(name={self.name})"
+
+@dataclass(frozen=True)
+class AutonomousPilotDisabledEvent(Event[None]):
+    name: str = "autonomous_pilot_disabled"
+
+    def __str__(self) -> str:
+        return f"AutonomousPilotDisabledEvent(name={self.name})"
+
+@dataclass(frozen=True)
+class AutonomousPilotExecutedEvent(Event[None]):
+    name: str = "autonomous_pilot_executed"
+
+    def __str__(self) -> str:
+        return f"AutonomousPilotExecutedEvent(name={self.name})"
 
 @dataclass(frozen=True)
 class CarShutdownEvent(Event[None]):

@@ -1,0 +1,70 @@
+# .cursorrules
+
+## Project Context
+
+Server-client python application to handle a 4wd car.
+
+## Functional Requirements
+
+4wd car can be driven in three different modes:
+
+- Autonomous with obstacles avoidance
+- Autonomous following walls
+- Manual
+
+## Project Structure
+
+The project is divided into four packages:
+
+### client
+
+UDP client that sends shared Commands to server package
+
+### device
+
+Project's core that contains domain logic of 4wd car device
+
+### server
+
+UDP server that receives shared Commands from client package
+
+### shared
+
+Common shared environment settings and shared Commands between client and serve packages
+
+## Architecture
+
+### device
+
+- Follow DDD principles and hexagonal architecture
+- A single bounded context containing entities: Car, Pilot and ObstaclesDetector
+- Communication between entities is carried out through events and an event bus
+- Application listens to domain Events and sends Commands to queues
+- Use cases are modelated as Commands
+- Apply domain-driven and event-driven design
+
+### server, client
+
+- Generic subdomains that only connect device infrastructure
+- Don't follow DDD principles and hexagonal architecture, just follow layers separation
+
+### shared
+
+- Support subdomain that offers utitilies to generic subdomains
+
+## Code Conventions
+
+- Descriptive English naming
+- Comments only when adding value about why some decision
+- Apply clean code practices and SOLID principles, promoting testable and maintainable code
+
+## Tools
+
+- requirements.txt for dependencies and venv for isolation
+- pyproyect.toml for building
+- Use pip as package manager
+
+## User Stories
+
+- Documented in docs/user_stories/ folder
+- Always consider the user story context when implementing features
