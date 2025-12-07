@@ -1,8 +1,31 @@
 import sys
 import logging
 
-from config_common import Command
-from event import UpPressedEvent, DownPressedEvent, LeftPressedEvent, RightPressedEvent, ShiftLeftPressedEvent, ShiftRightPressedEvent, KeyReleasedEvent
+from shared.command import (
+    ActivateMode,
+    DeactivateMode,
+    DriveMode,
+    StopCarImmediately,
+    ResumeCarMovement,
+    MoveCarForward,
+    MoveCarBackward,
+    MoveCarLeft,
+    MoveCarRight,
+)
+from event import (
+    KeyOnePressedEvent,
+    KeyTwoPressedEvent,
+    KeyThreePressedEvent,
+    KeyZeroPressedEvent,
+    ShiftLeftPressedEvent,
+    ShiftRightPressedEvent,
+    SpacePressedEvent,
+    UpPressedEvent,
+    DownPressedEvent,
+    LeftPressedEvent,
+    RightPressedEvent,
+    KeyReleasedEvent,
+)
 from application import ApplicationBuilder
 
 logging.basicConfig(level=logging.INFO)
@@ -11,14 +34,21 @@ logger = logging.getLogger(__name__)
 
 def main() -> int:
     try:
-        with (ApplicationBuilder()
-              .on(UpPressedEvent, Command.FORWARD)
-              .on(DownPressedEvent, Command.BACKWARD)
-              .on(LeftPressedEvent, Command.LEFT)
-              .on(RightPressedEvent, Command.RIGHT)
-              .on(ShiftRightPressedEvent, Command.TOGGLE_CAR_ON_OFF)
-              .on(ShiftLeftPressedEvent, Command.TOGGLE_OBSTACLE_DETECTION_ON_OFF)
-              .on(KeyReleasedEvent, Command.STOP)) as _app:
+        with (
+            ApplicationBuilder()
+            .on(UpPressedEvent, MoveCarForward())
+            .on(DownPressedEvent, MoveCarBackward())
+            .on(LeftPressedEvent, MoveCarLeft())
+            .on(RightPressedEvent, MoveCarRight())
+            .on(KeyReleasedEvent, StopCarImmediately())
+            .on(KeyOnePressedEvent, ActivateMode(DriveMode.MANUAL))
+            .on(KeyTwoPressedEvent, ActivateMode(DriveMode.OBSTANCES_AVOIDANCE))
+            .on(KeyThreePressedEvent, ActivateMode(DriveMode.WALLS_FOLLOWING))
+            .on(KeyZeroPressedEvent, DeactivateMode())
+            .on(SpacePressedEvent, StopCarImmediately())
+            .on(ShiftLeftPressedEvent, ResumeCarMovement())
+            .on(ShiftRightPressedEvent, ResumeCarMovement())
+        ) as _app:
             logger.info("Client started")
 
     except KeyboardInterrupt:

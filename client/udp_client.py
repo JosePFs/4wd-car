@@ -3,7 +3,8 @@ from dataclasses import dataclass
 import logging
 from logging import Logger
 
-from config_common import Command
+from shared.command import Command
+
 
 @dataclass(frozen=True)
 class UDPTarget:
@@ -13,6 +14,7 @@ class UDPTarget:
     @property
     def address(self) -> tuple[str, int]:
         return self.host, self.port
+
 
 class UDPClient:
     _logger: Logger = logging.getLogger(__name__)

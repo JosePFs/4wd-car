@@ -2,76 +2,112 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from pynput import keyboard
 
-dataclass(frozen=True)
 
-
+@dataclass(frozen=True)
 class Event(ABC):
-    name: str
+    key: keyboard.Key | keyboard.KeyCode
 
-    @abstractmethod
     def __str__(self) -> str:
-        ...
+        return (
+            f"Event(key={self.key}, should_send_release={self.should_send_release()})"
+        )
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Event):
-            return False
-        return self.name == other.name
-
-    def __hash__(self) -> int:
-        return hash(self.name)
+    @classmethod
+    @abstractmethod
+    def should_send_release(cls) -> bool: ...
 
 
 @dataclass(frozen=True)
 class UpPressedEvent(Event):
-    name: str = "up"
 
-    def __str__(self) -> str:
-        return f"UpPressedEvent(name={self.name})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return True
 
 
 @dataclass(frozen=True)
 class DownPressedEvent(Event):
-    name: str = "down"
 
-    def __str__(self) -> str:
-        return f"DownPressedEvent(name={self.name})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return True
 
 
 @dataclass(frozen=True)
 class LeftPressedEvent(Event):
-    name: str = "left"
 
-    def __str__(self) -> str:
-        return f"LeftPressedEvent(name={self.name})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return True
 
 
 @dataclass(frozen=True)
 class RightPressedEvent(Event):
-    name: str = "right"
 
-    def __str__(self) -> str:
-        return f"RightPressedEvent(name={self.name})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return True
+
+
+@dataclass(frozen=True)
+class KeyOnePressedEvent(Event):
+
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class KeyTwoPressedEvent(Event):
+
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class KeyThreePressedEvent(Event):
+
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class KeyZeroPressedEvent(Event):
+
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
 
 
 @dataclass(frozen=True)
 class ShiftLeftPressedEvent(Event):
-    name: str = "shift_left"
 
-    def __str__(self) -> str:
-        return f"ShiftLeftPressedEvent(name={self.name})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
 
 
 @dataclass(frozen=True)
 class ShiftRightPressedEvent(Event):
-    name: str = "shift_right"
 
-    def __str__(self) -> str:
-        return f"ShiftRightPressedEvent(name={self.name})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class SpacePressedEvent(Event):
+
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False
+
 
 @dataclass(frozen=True)
 class KeyReleasedEvent(Event):
-    key: keyboard.Key | keyboard.KeyCode
-    name: str = "key_released"
 
-    def __str__(self) -> str:
-        return f"KeyReleasedEvent(name={self.name}, key={self.key})"
+    @classmethod
+    def should_send_release(cls) -> bool:
+        return False

@@ -9,13 +9,14 @@ from keyboard_controller import KeyboardController
 from udp_client import UDPClient, UDPTarget
 from event_handler import EventHandler
 from event import Event
-from config_common import Env, Command
+from shared.command import Command
+from shared.env import Env
 
 
 class Mode(Enum):
-    DEVELOPMENT = 'development'
-    PRODUCTION = 'production'
-    TEST = 'test'
+    DEVELOPMENT = "development"
+    PRODUCTION = "production"
+    TEST = "test"
 
 
 @dataclass(frozen=True)
@@ -24,15 +25,15 @@ class ApplicationConfig:
     log_level: int
 
     @classmethod
-    def development(cls) -> 'ApplicationConfig':
+    def development(cls) -> "ApplicationConfig":
         return cls(mode=Mode.DEVELOPMENT, log_level=logging.DEBUG)
 
     @classmethod
-    def production(cls) -> 'ApplicationConfig':
+    def production(cls) -> "ApplicationConfig":
         return cls(mode=Mode.PRODUCTION, log_level=logging.INFO)
 
     @classmethod
-    def test(cls) -> 'ApplicationConfig':
+    def test(cls) -> "ApplicationConfig":
         return cls(mode=Mode.TEST, log_level=logging.DEBUG)
 
     def __str__(self):
@@ -60,7 +61,7 @@ class ApplicationBuilder:
         self._callbacks: list[tuple[type[Event], Command]] = []
         self._app: Optional[Application] = None
 
-    def on(self, event_type: type[Event], command: Command) -> 'ApplicationBuilder':
+    def on(self, event_type: type[Event], command: Command) -> "ApplicationBuilder":
         self._callbacks.append((event_type, command))
         return self
 
@@ -72,7 +73,9 @@ class ApplicationBuilder:
         event_handler = EventHandler()
         for event_type, command in self._callbacks:
             event_handler.add_callback(
-                event_type, partial(lambda event, cmd: udp_client.send(cmd), cmd=command))
+                event_type,
+                partial(lambda event, cmd: udp_client.send(cmd), cmd=command),
+            )
         keyboard_controller = KeyboardController(event_handler)
         return Application(keyboard_controller, udp_client)
 
@@ -89,5 +92,6 @@ class ApplicationBuilder:
                 self._app.stop()
             except Exception as e:
                 self._logger.error(
-                    f"Error during application shutdown: {e}", exc_info=True)
+                    f"Error during application shutdown: {e}", exc_info=True
+                )
         return False

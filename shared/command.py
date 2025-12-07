@@ -56,7 +56,55 @@ class ResumeCarMovement:
         return "Command(resume_car_movement)"
 
 
-Command = ActivateMode | DeactivateMode | StopCarImmediately | ResumeCarMovement
+@dataclass(frozen=True)
+class MoveCarForward:
+    def encode(self) -> bytes:
+        return b"move_car_forward"
+
+    def __str__(self) -> str:
+        return "Command(move_car_forward)"
+
+
+@dataclass(frozen=True)
+class MoveCarBackward:
+
+    def encode(self) -> bytes:
+        return b"move_car_backward"
+
+    def __str__(self) -> str:
+        return "Command(move_car_backward)"
+
+
+@dataclass(frozen=True)
+class MoveCarLeft:
+
+    def encode(self) -> bytes:
+        return b"move_car_left"
+
+    def __str__(self) -> str:
+        return "Command(move_car_left)"
+
+
+@dataclass(frozen=True)
+class MoveCarRight:
+
+    def encode(self) -> bytes:
+        return b"move_car_right"
+
+    def __str__(self) -> str:
+        return "Command(move_car_right)"
+
+
+Command = (
+    ActivateMode
+    | DeactivateMode
+    | StopCarImmediately
+    | ResumeCarMovement
+    | MoveCarForward
+    | MoveCarBackward
+    | MoveCarLeft
+    | MoveCarRight
+)
 
 
 def parse_command(string: str) -> Command:
@@ -74,5 +122,13 @@ def parse_command(string: str) -> Command:
             return StopCarImmediately()
         case "resume_car_movement":
             return ResumeCarMovement()
+        case "move_car_forward":
+            return MoveCarForward()
+        case "move_car_backward":
+            return MoveCarBackward()
+        case "move_car_left":
+            return MoveCarLeft()
+        case "move_car_right":
+            return MoveCarRight()
         case _:
             raise ValueError(f"Invalid command: {string}")
