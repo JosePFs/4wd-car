@@ -25,7 +25,7 @@ class UDPClient:
 
     def send(self, msg: Command):
         self.sock.sendto(str(msg).encode(), self.target.address)
-        self._logger.info(f"Message sent: {msg} to {self.target.address}")
+        self._logger.debug(f"Message sent: {msg} to {self.target.address}")
 
     def close(self):
         self.sock.close()

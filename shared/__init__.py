@@ -7,7 +7,7 @@ from .command import (
     ResumeCarMovement,
     parse_command,
 )
-from .env import Env
+from .env import Env, EnvironmentConfig
 
 
 __all__ = [
@@ -19,4 +19,5 @@ __all__ = [
     "ResumeCarMovement",
     "parse_command",
     "Env",
+    "EnvironmentConfig",
 ]

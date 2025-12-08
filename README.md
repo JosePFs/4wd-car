@@ -103,6 +103,7 @@ sudo apt-get install -y i2c-tools python3-libcamera python3-smbus libcap-dev
 ```bash
 cd shared
 # Edit .env or environment variables as needed
+export APP_MODE=test|development|production
 export UDP_HOST="x.x.x.x"  # Raspberry Pi IP
 export UDP_PORT="5000"
 ```
